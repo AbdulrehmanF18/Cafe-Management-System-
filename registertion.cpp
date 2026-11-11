@@ -4,12 +4,11 @@
 using namespace std;
 using namespace sf;
 
-int main()
+int openRegistrationScreen()
 {
-    RenderWindow window(VideoMode({600, 665}), "cafe management system "); // creating window
+    RenderWindow window(VideoMode({600, 665}), "Cafe Management System - Registration");
     window.setFramerateLimit(60);
 
-    // input boxes and their inside colors
     RectangleShape namebox({400.f, 45.f});
     RectangleShape emailbox({400.f, 45.f});
     RectangleShape rolebox({400.f, 45.f});
@@ -20,13 +19,11 @@ int main()
     rolebox.setFillColor(Color::White);
     passwordbox.setFillColor(Color::White);
 
-    // set position of rectangle
     namebox.setPosition({100.f, 110.f});
     emailbox.setPosition({100.f, 220.f});
     rolebox.setPosition({100.f, 330.f});
     passwordbox.setPosition({100.f, 520.f});
 
-    // set outline thickness and color of rectangle
     namebox.setOutlineThickness(2.f);
     emailbox.setOutlineThickness(2.f);
     rolebox.setOutlineThickness(2.f);
@@ -37,12 +34,11 @@ int main()
     rolebox.setOutlineColor(Color::Black);
     passwordbox.setOutlineColor(Color::Black);
 
-    // input text
     Font font("C:\\Windows\\Fonts\\Arial.ttf");
 
     Text nametext(font, "", 20);
     nametext.setFillColor(Color::Black);
-    nametext.setPosition({112.f, 118.f}); // set position and colors of text
+    nametext.setPosition({112.f, 118.f});
 
     Text emailtext(font, "", 20);
     emailtext.setFillColor(Color::Black);
@@ -51,8 +47,6 @@ int main()
     Text roletext(font, "Select Role", 20);
     roletext.setFillColor(Color::Black);
     roletext.setPosition({112.f, 338.f});
-
-    // dropdown for role
 
     RectangleShape adminoption({400.f, 45.f});
     RectangleShape salesmanoption({400.f, 45.f});
@@ -66,20 +60,18 @@ int main()
     adminoption.setOutlineColor(Color::Black);
     salesmanoption.setOutlineColor(Color::Black);
 
-    // dropdown text
     Text admintext(font, "Admin", 20);
     admintext.setFillColor(Color::Black);
     admintext.setPosition({112.f, 383.f});
 
     Text salesmantext(font, "Salesman", 20);
     salesmantext.setFillColor(Color::Black);
-    salesmantext.setPosition({112.f, 423.f}); //
+    salesmantext.setPosition({112.f, 423.f});
 
     Text passwordtext(font, "", 20);
     passwordtext.setFillColor(Color::Black);
     passwordtext.setPosition({112.f, 528.f});
 
-    // lable
     Text namelabel(font, "Name:", 20);
     namelabel.setFillColor(Color::Black);
     namelabel.setPosition({100.f, 65.f});
@@ -104,6 +96,11 @@ int main()
     salesmanText.setPosition({112.f, 422.f});
     salesmanText.setFillColor(Color::Black);
 
+    Text backToLogin(font, "Already have an account? Sign In", 20);
+    backToLogin.setFillColor(Color::Blue);
+    backToLogin.setStyle(Text::Underlined);
+    backToLogin.setPosition({110.f, 590.f});
+
     string name = "";
     string email = "";
     string password = "";
@@ -116,16 +113,17 @@ int main()
     {
         while (optional event = window.pollEvent())
         {
-            if (event->is<Event::Closed>()) // manage events like closing of window
+            if (event->is<Event::Closed>())
             {
                 window.close();
+                return 0;
             }
 
             if (const auto *textEvent = event->getIf<Event::TextEntered>())
             {
                 if (!drop && input_fields != 0)
                 {
-                    if (textEvent->unicode == 8) // backspace
+                    if (textEvent->unicode == 8)
                     {
                         if (input_fields == 1 && !name.empty())
                         {
@@ -140,15 +138,15 @@ int main()
                             password.pop_back();
                         }
                     }
-                    else if (textEvent->unicode == 13) // enter key
+                    else if (textEvent->unicode == 13)
                     {
-                        input_fields=0;
+                        input_fields = 0;
                     }
                     else if (textEvent->unicode >= 32 && textEvent->unicode < 128)
                     {
                         char character = static_cast<char>(textEvent->unicode);
 
-                        if(input_fields == 1)
+                        if (input_fields == 1)
                         {
                             name += character;
                         }
@@ -168,21 +166,17 @@ int main()
                 }
             }
 
-            if (const auto *mouseEvent =
-                    event->getIf<Event::MouseButtonPressed>())
+            if (const auto *mouseEvent = event->getIf<Event::MouseButtonPressed>())
             {
                 if (mouseEvent->button == Mouse::Button::Left)
                 {
-                    Vector2f mousePos =
-                        window.mapPixelToCoords(mouseEvent->position);
+                    Vector2f mousePos = window.mapPixelToCoords(mouseEvent->position);
 
                     if (namebox.getGlobalBounds().contains(mousePos))
                     {
                         input_fields = 1;
                         drop = false;
                     }
-
-                    
                     else if (emailbox.getGlobalBounds().contains(mousePos))
                     {
                         input_fields = 2;
@@ -193,15 +187,12 @@ int main()
                         input_fields = 0;
                         drop = !drop;
                     }
-
-    
                     else if (drop && adminoption.getGlobalBounds().contains(mousePos))
                     {
                         role = "Admin";
                         roletext.setString(role);
                         drop = false;
                     }
-
                     else if (drop && salesmanoption.getGlobalBounds().contains(mousePos))
                     {
                         role = "Salesman";
@@ -213,6 +204,11 @@ int main()
                         input_fields = 3;
                         drop = false;
                     }
+                    else if (backToLogin.getGlobalBounds().contains(mousePos))
+                    {
+                        window.close();
+                        return 1;
+                    }
                     else
                     {
                         input_fields = 0;
@@ -221,8 +217,9 @@ int main()
                 }
             }
         }
-        window.clear(Color::Cyan); // add colors
-        window.draw(namelabel);    // draw lables
+
+        window.clear(Color::Cyan);
+        window.draw(namelabel);
         window.draw(emailtext);
         window.draw(roletext);
         window.draw(passwordtext);
@@ -231,7 +228,7 @@ int main()
         window.draw(rolelabel);
         window.draw(passwordlabel);
 
-        window.draw(namebox); // draw boxes
+        window.draw(namebox);
         window.draw(emailbox);
         window.draw(rolebox);
         window.draw(passwordbox);
@@ -245,11 +242,11 @@ int main()
         {
             window.draw(adminoption);
             window.draw(salesmanoption);
-
             window.draw(adminText);
             window.draw(salesmanText);
         }
 
+        window.draw(backToLogin);
         window.display();
     }
 

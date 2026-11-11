@@ -4,12 +4,11 @@
 using namespace std;
 using namespace sf;
 
-int main()
+int openSignInScreen()
 {
-    RenderWindow window(VideoMode({600, 665}), "cafe management system "); // creating window
+    RenderWindow window(VideoMode({600, 665}), "Cafe Management System - Sign In");
     window.setFramerateLimit(60);
 
-    // input boxes
     RectangleShape emailbox({400.f, 45.f});
     emailbox.setPosition({100.f, 110.f});
     emailbox.setFillColor(Color::White);
@@ -24,20 +23,14 @@ int main()
 
     Font font("C:\\Windows\\Fonts\\Arial.ttf");
 
-    // input text
     Text emailtext(font, "", 20);
-    emailtext.setPosition({112.f, 108.f});
-    emailtext.setFillColor(Color::White);
-    emailtext.setOutlineColor(Color::Black);
-    emailtext.setOutlineThickness(2.f);
+    emailtext.setPosition({112.f, 118.f});
+    emailtext.setFillColor(Color::Black);
 
     Text passwordtext(font, "", 20);
-    passwordtext.setPosition({112.f, 218.f});
-    passwordtext.setFillColor(Color::White);
-    passwordtext.setOutlineColor(Color::Black);
-    passwordtext.setOutlineThickness(2.f);
+    passwordtext.setPosition({112.f, 228.f});
+    passwordtext.setFillColor(Color::Black);
 
-    // input labels
     Text emaillable(font, "E-MAIL:", 20);
     emaillable.setPosition({100.f, 65.f});
     emaillable.setFillColor(Color::Black);
@@ -46,19 +39,29 @@ int main()
     passwordlable.setPosition({100.f, 165.f});
     passwordlable.setFillColor(Color::Black);
 
+    Text registerText(font, "Don't have an account? Register", 20);
+    registerText.setPosition({110.f, 560.f});
+    registerText.setFillColor(Color::Blue);
+    registerText.setStyle(Text::Underlined);
+
+    Text signinButton(font, "SIGN IN", 28);
+    signinButton.setPosition({230.f, 330.f});
+    signinButton.setFillColor(Color::Black);
+
     string email = "";
     string password = "";
-
     int input_fields = 0;
 
     while (window.isOpen())
     {
         while (optional event = window.pollEvent())
         {
-            if (event->is<Event::Closed>()) // manage events like closing of window
+            if (event->is<Event::Closed>())
             {
                 window.close();
+                return 0;
             }
+
             if (const auto *mouseEvent = event->getIf<Event::MouseButtonPressed>())
             {
                 if (mouseEvent->button == Mouse::Button::Left)
@@ -69,18 +72,22 @@ int main()
                     {
                         input_fields = 1;
                     }
-
                     else if (passwordbox.getGlobalBounds().contains(mousePos))
                     {
                         input_fields = 2;
                     }
-
+                    else if (registerText.getGlobalBounds().contains(mousePos))
+                    {
+                        window.close();
+                        return 1;
+                    }
                     else
                     {
                         input_fields = 0;
                     }
                 }
             }
+
             if (const auto *textEvent = event->getIf<Event::TextEntered>())
             {
                 if (input_fields != 0)
@@ -96,7 +103,7 @@ int main()
                             password.pop_back();
                         }
                     }
-                    else if (textEvent->unicode == 13) // enter key
+                    else if (textEvent->unicode == 13)
                     {
                         input_fields = 0;
                     }
@@ -113,21 +120,24 @@ int main()
                             password += character;
                         }
                     }
+
                     emailtext.setString(email);
                     passwordtext.setString(password);
                 }
             }
         }
-        window.clear(Color::Cyan);
 
+        window.clear(Color::Cyan);
         window.draw(emailbox);
-         window.draw(emaillable);
+        window.draw(emaillable);
         window.draw(emailtext);
 
         window.draw(passwordbox);
-         window.draw(passwordlable);
+        window.draw(passwordlable);
         window.draw(passwordtext);
 
+        window.draw(signinButton);
+        window.draw(registerText);
         window.display();
     }
 
