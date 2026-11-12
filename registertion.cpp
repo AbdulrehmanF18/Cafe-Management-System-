@@ -1,8 +1,28 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <string>
 using namespace std;
 using namespace sf;
+
+void saveRegistration(string name, string email, string role, string password)
+{
+    ofstream file("users.txt", ios::app);
+
+    if (file.is_open())
+    {
+        file << name << "," << email << "," << role << "," << password << endl;
+
+        file.close();
+
+        cout << "Registration saved successfully!" << endl;
+    }
+    else
+    {
+        cout << "Unable to open file!" << endl;
+    }
+}
 
 int openRegistrationScreen()
 {
@@ -13,28 +33,33 @@ int openRegistrationScreen()
     RectangleShape emailbox({400.f, 45.f});
     RectangleShape rolebox({400.f, 45.f});
     RectangleShape passwordbox({400.f, 45.f});
+    RectangleShape registerButton({200.f, 45.f});
 
     namebox.setFillColor(Color::White);
     emailbox.setFillColor(Color::White);
     rolebox.setFillColor(Color::White);
     passwordbox.setFillColor(Color::White);
+    registerButton.setFillColor(Color::White);
 
     namebox.setPosition({100.f, 110.f});
     emailbox.setPosition({100.f, 220.f});
     rolebox.setPosition({100.f, 330.f});
     passwordbox.setPosition({100.f, 520.f});
+    registerButton.setPosition({200.f, 580.f});
 
     namebox.setOutlineThickness(2.f);
     emailbox.setOutlineThickness(2.f);
     rolebox.setOutlineThickness(2.f);
     passwordbox.setOutlineThickness(2.f);
+    registerButton.setOutlineThickness(2.f);
 
     namebox.setOutlineColor(Color::Black);
     emailbox.setOutlineColor(Color::Black);
     rolebox.setOutlineColor(Color::Black);
     passwordbox.setOutlineColor(Color::Black);
+    registerButton.setOutlineColor(Color::Black);
 
-    Font font("C:\\Windows\\Fonts\\Arial.ttf");
+    Font font("Arial.ttf");
 
     Text nametext(font, "", 20);
     nametext.setFillColor(Color::Black);
@@ -100,6 +125,10 @@ int openRegistrationScreen()
     backToLogin.setFillColor(Color::Blue);
     backToLogin.setStyle(Text::Underlined);
     backToLogin.setPosition({110.f, 590.f});
+
+    Text registerLabel(font, "REGISTER", 24);
+    registerLabel.setFillColor(Color::Black);
+    registerLabel.setPosition({255.f, 588.f});
 
     string name = "";
     string email = "";
@@ -209,6 +238,21 @@ int openRegistrationScreen()
                         window.close();
                         return 1;
                     }
+                    else if (registerButton.getGlobalBounds().contains(mousePos))
+                    {
+                        if (!name.empty() && !email.empty() &&
+                            !role.empty() && !password.empty())
+                        {
+                            saveRegistration(name, email, role, password);
+
+                            window.close();
+                            return 1;
+                        }
+                        else
+                        {
+                            cout << "Please fill all fields!" << endl;
+                        }
+                    }
                     else
                     {
                         input_fields = 0;
@@ -232,6 +276,7 @@ int openRegistrationScreen()
         window.draw(emailbox);
         window.draw(rolebox);
         window.draw(passwordbox);
+        window.draw(registerButton);
 
         window.draw(nametext);
         window.draw(emailtext);
@@ -246,6 +291,7 @@ int openRegistrationScreen()
             window.draw(salesmanText);
         }
 
+        window.draw(registerLabel);
         window.draw(backToLogin);
         window.display();
     }

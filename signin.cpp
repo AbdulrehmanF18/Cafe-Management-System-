@@ -1,8 +1,48 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <string>
+#include <fstream>
+#include <sstream>
 using namespace std;
 using namespace sf;
+
+bool checkLogin(string enteredEmail, string enteredPassword)
+{
+    ifstream file("users.txt");
+
+    if (!file.is_open())
+    {
+        cout << "Unable to open users.txt";
+        return false;
+    }
+
+    string line;
+    string storedName;
+        string storedEmail;
+    string storedPassword;
+    string storedRole;
+      cout << "inside funtion " << endl;
+    while (getline(file, line))
+    {
+        stringstream ss(line);
+        getline(ss, storedName, ',');
+        cout << storedRole;
+        getline(ss, storedEmail, ','); cout << storedEmail;
+        getline(ss, storedRole, ',');
+        cout << storedRole;
+        getline(ss, storedPassword, ','); cout << storedPassword;
+        
+
+        if (enteredEmail == storedEmail && enteredPassword == storedPassword)
+        {
+            file.close();
+            return true;
+        }
+    }
+
+    file.close();
+    return false;
+}
 
 int openSignInScreen()
 {
@@ -21,7 +61,7 @@ int openSignInScreen()
     passwordbox.setOutlineThickness(2.f);
     passwordbox.setOutlineColor(Color::Black);
 
-    Font font("C:\\Windows\\Fonts\\Arial.ttf");
+    Font font("Arial.ttf");
 
     Text emailtext(font, "", 20);
     emailtext.setPosition({112.f, 118.f});
@@ -81,6 +121,23 @@ int openSignInScreen()
                         window.close();
                         return 1;
                     }
+                    else if (signinButton.getGlobalBounds().contains(mousePos))
+                    {
+                        cout << email <<  password;
+                        if (checkLogin(email, password))
+                        {
+
+                            cout << "Login Successful!" << endl;
+                            window.close();
+
+                            return 2;
+                        }
+                        else
+                        {
+                            cout << "Invalid Email or Password!" << endl;
+                        }
+                    }
+
                     else
                     {
                         input_fields = 0;
