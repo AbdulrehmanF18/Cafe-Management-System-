@@ -44,6 +44,7 @@ bool checkLogin(string enteredEmail, string enteredPassword)
     return false;
 }
 
+
 int openSignInScreen()
 {
     RenderWindow window(VideoMode({600, 665}), "Cafe Management System - Sign In");
