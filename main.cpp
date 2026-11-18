@@ -1,5 +1,7 @@
 #include "signin.cpp"
 #include "registertion.cpp"
+#include "3rd_page_project.cpp"
+#include "main_control_box.cpp"
 
 int main()
 {
@@ -25,6 +27,18 @@ int main()
             {
                 continue;
             }
+        }
+
+        if (signInResult == 2)
+        {
+            int dashboardResult = openThirdScreen();
+
+            if (dashboardResult == 3)
+            {
+                openMainControlBox();
+            }
+
+            break;
         }
     }
 

@@ -124,7 +124,7 @@ int openRegistrationScreen()
     Text backToLogin(font, "Already have an account? Sign In", 20);
     backToLogin.setFillColor(Color::Blue);
     backToLogin.setStyle(Text::Underlined);
-    backToLogin.setPosition({110.f, 590.f});
+    backToLogin.setPosition({160.f, 635.f});
 
     Text registerLabel(font, "REGISTER", 24);
     registerLabel.setFillColor(Color::Black);

@@ -18,7 +18,7 @@ bool checkLogin(string enteredEmail, string enteredPassword)
 
     string line;
     string storedName;
-        string storedEmail;
+    string storedEmail;
     string storedPassword;
     string storedRole;
       cout << "inside funtion " << endl;
@@ -27,10 +27,12 @@ bool checkLogin(string enteredEmail, string enteredPassword)
         stringstream ss(line);
         getline(ss, storedName, ',');
         cout << storedRole;
-        getline(ss, storedEmail, ','); cout << storedEmail;
+        getline(ss, storedEmail, ',');
+        cout << storedEmail;
         getline(ss, storedRole, ',');
         cout << storedRole;
-        getline(ss, storedPassword, ','); cout << storedPassword;
+        getline(ss, storedPassword, ','); 
+        cout << storedPassword;
         
 
         if (enteredEmail == storedEmail && enteredPassword == storedPassword)
@@ -127,7 +129,7 @@ int openSignInScreen()
                         cout << email <<  password;
                         if (checkLogin(email, password))
                         {
-
+  
                             cout << "Login Successful!" << endl;
                             window.close();
 
