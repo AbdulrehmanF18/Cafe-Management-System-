@@ -84,10 +84,10 @@ void saveInventory()
     for (int i = 0; i < productCount; i++)
     {
         file << productIDs[i] << " "
-            << productCategories[i] << " "
-            << productPrices[i] << " "
-            << productAvailable[i] << " "
-            << productNames[i] << endl;
+             << productCategories[i] << " "
+             << productPrices[i] << " "
+             << productAvailable[i] << " "
+             << productNames[i] << endl;
     }
 
     file.close();
@@ -96,7 +96,7 @@ void saveInventory()
 void loadInventory()
 {
     ifstream file("inventory.txt");
-
+    productCount = 0;
     if (file)
     {
         int id, category, price;
@@ -158,19 +158,26 @@ void loadInventory()
 
 void displayAllProducts()
 {
-    cout << endl << "========== PRODUCT INVENTORY ==========" << endl;
+    cout << endl
+         << "========== PRODUCT INVENTORY ==========" << endl;
 
     for (int i = 0; i < productCount; i++)
     {
-        cout << endl << "ID: " << productIDs[i];
-        cout << endl << "Name: " << productNames[i];
-        cout << endl << "Price: Rs. " << productPrices[i];
-        cout << endl << "Category: " << getCategoryName(productCategories[i]);
+        cout << endl
+             << "ID: " << productIDs[i];
+        cout << endl
+             << "Name: " << productNames[i];
+        cout << endl
+             << "Price: Rs. " << productPrices[i];
+        cout << endl
+             << "Category: " << getCategoryName(productCategories[i]);
 
         if (productAvailable[i])
-            cout << endl << "Status: Available" << endl;
+            cout << endl
+                 << "Status: Available" << endl;
         else
-            cout << endl << "Status: Unavailable" << endl;
+            cout << endl
+                 << "Status: Unavailable" << endl;
 
         cout << "----------------------------------" << endl;
     }
@@ -178,13 +185,14 @@ void displayAllProducts()
 
 void displayProductIDs()
 {
-    cout << endl << "========== PRODUCT IDs ==========" << endl;
+    cout << endl
+         << "========== PRODUCT IDs ==========" << endl;
 
     for (int i = 0; i < productCount; i++)
     {
         cout << productIDs[i] << " - "
-            << productNames[i] << " ("
-            << getCategoryName(productCategories[i]) << ")";
+             << productNames[i] << " ("
+             << getCategoryName(productCategories[i]) << ")";
 
         if (!productAvailable[i])
             cout << " - Unavailable";
@@ -205,7 +213,8 @@ void addNewProduct()
     int price;
     int category;
 
-    cout << endl << "========== ADD NEW PRODUCT ==========" << endl;
+    cout << endl
+         << "========== ADD NEW PRODUCT ==========" << endl;
 
     cin.ignore();
 
@@ -227,7 +236,8 @@ void addNewProduct()
         return;
     }
 
-    cout << endl << "Select product category:" << endl;
+    cout << endl
+         << "Select product category:" << endl;
     displayCategories();
 
     cout << "Enter category number: ";
@@ -245,7 +255,8 @@ void addNewProduct()
     {
         saveInventory();
 
-        cout << endl << "Product successfully added!" << endl;
+        cout << endl
+             << "Product successfully added!" << endl;
         cout << "Generated Product ID: " << id << endl;
     }
     else
@@ -267,7 +278,8 @@ void changeProductAvailability(bool status)
     int id;
     bool found = false;
 
-    cout << endl << "Enter product ID: ";
+    cout << endl
+         << "Enter product ID: ";
     cin >> id;
 
     for (int i = 0; i < productCount; i++)
@@ -295,7 +307,7 @@ void changeProductAvailability(bool status)
     }
 }
 
-int main()
+int runInventoryConsole()
 {
     int choice;
 
@@ -314,29 +326,17 @@ int main()
         cin >> choice;
 
         if (choice == 1)
-        {
             displayAllProducts();
-        }
         else if (choice == 2)
-        {
             addNewProduct();
-        }
         else if (choice == 3)
-        {
             changeProductAvailability(false);
-        }
         else if (choice == 4)
-        {
             changeProductAvailability(true);
-        }
         else if (choice == 5)
-        {
             cout << "Exiting inventory system..." << endl;
-        }
         else
-        {
             cout << "Invalid choice! Try again." << endl;
-        }
 
     } while (choice != 5);
 

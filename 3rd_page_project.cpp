@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <string>
+#include "inventory_page-gui.cpp"
 
 using namespace std;
 using namespace sf;
@@ -68,7 +69,7 @@ int openThirdScreen()
 
                     if (productButton.getGlobalBounds().contains(mousePos))
                     {
-                        statusText.setString("Product button clicked");
+                        openInventoryPage();
                     }
                     else if (salesButton.getGlobalBounds().contains(mousePos))
                     {
