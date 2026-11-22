@@ -488,7 +488,7 @@ void loadDate()
 
 	if (inFile >> currentDay >> currentMonth >> currentYear)
 	{
-		// This if condition will only run after the first date is stored .
+
 		inFile.close();
 
 		tm t = {};
@@ -504,7 +504,6 @@ void loadDate()
 	}
 	else
 	{
-		// first run .
 		time_t now = time(0);
 		tm t;
 		localtime_s(&t, &now);
