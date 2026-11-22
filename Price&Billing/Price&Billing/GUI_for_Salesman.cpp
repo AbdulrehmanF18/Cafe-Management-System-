@@ -38,8 +38,7 @@ bool isInside(const Button& b, sf::Vector2f p)
 		p.y >= b.y && p.y <= b.y + b.h;
 }
 
-void drawButton(sf::RenderWindow& window, const sf::Font& font,
-	const Button& b, bool hovered, bool selected)
+void drawButton(sf::RenderWindow& window, const sf::Font& font,const Button& b, bool hovered, bool selected)
 {
 	sf::RectangleShape box(sf::Vector2f(b.w, b.h));
 	box.setPosition(sf::Vector2f(b.x, b.y));
@@ -75,7 +74,7 @@ void drawText(sf::RenderWindow& window, const sf::Font& font, const string& str,
 	window.draw(text);
 }
 
-// ================= BUTTON LAYOUT FOR EACH SCREEN =================
+// BUTTON LAYOUT FOR EACH SCREEN
 // Fills the buttons array for the current screen and returns how many buttons there are.
 // The order of buttons here is the order used when handling clicks.
 
@@ -123,6 +122,7 @@ int buildButtons(Screen screen, int category, Button buttons[])
 	return n;
 }
 
+//  MAIN GUI FUNCTION 
 // ================= MAIN GUI FUNCTION =================
 
 void runGUI()
@@ -153,6 +153,7 @@ void runGUI()
 		Button buttons[MAX_BUTTONS];
 		int buttonCount = buildButtons(screen, category, buttons);
 
+		// EVENTS
 		// ---------- EVENTS ----------
 		while (const optional<sf::Event> event = window.pollEvent())
 		{
@@ -260,12 +261,14 @@ void runGUI()
 							}
 							else if (clicked == 1)
 							{
+								saveInvoiceToFile();
 								clearInvoice();
 								message = "";
 								screen = PORTAL;
 							}
 							else
 							{
+								saveInvoiceToFile();
 								window.close();
 							}
 						}
@@ -280,6 +283,7 @@ void runGUI()
 		if (!window.isOpen())
 			break;
 
+		//  DRAWING
 		// ---------- DRAWING ----------
 		window.clear(sf::Color::Cyan);
 
@@ -289,6 +293,7 @@ void runGUI()
 		{
 			drawText(window, font, "BREW & BITE CAFE", 500, 90, 60, true);
 			drawText(window, font, "CUSTOMER PORTAL", 500, 190, 34, true);
+			drawText(window, font, "Date: " + getCurrentDate(), 500, 245, 28, true);
 		}
 		else if (screen == CATEGORIES)
 		{
@@ -304,6 +309,7 @@ void runGUI()
 		else if (screen == INVOICE)
 		{
 			drawText(window, font, "INVOICE", 500, 20, 44, true);
+			drawText(window, font, "Date: " + getCurrentDate(), 700, 35, 24);
 
 			int count = getInvoiceCount();
 

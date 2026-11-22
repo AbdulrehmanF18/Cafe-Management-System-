@@ -1,10 +1,13 @@
 #include<iostream>
 #include<string>
+#include<fstream>
+#include<ctime>
 #include "GUI_forsales.h"
 
 using namespace std;
 
 
+//FUNCTION PROTOTYPES 
 //FUNCTION PROTOTYPES (console version)
 int displayBurgers();
 int displaySandwiches();
@@ -19,6 +22,15 @@ bool addToInvoice(string name, int price, int qty);
 void takeOrder(int category, int pick);
 void printInvoice();
 
+//FUNCTION PROTOTYPES for date data .
+
+void loadDate();
+void saveDate();
+string getCurrentDate();
+void saveInvoiceToFile();
+void viewSalesHistory();
+
+//FUNCTION PROTOTYPES ( also declared in GUI_forsales.h)
 //FUNCTION PROTOTYPES (used by the GUI, also declared in GUI_forsales.h)
 string getCategoryName(int category);
 int getItemCount(int category);
@@ -36,6 +48,9 @@ void clearInvoice();
 //Global Variables for storing menu items and their prices
 
 const int MAX_ITEMS = 50;
+int currentDay = 1;
+int currentMonth = 1;
+int currentYear = 2026;
 
 // invoice data (1D arrays)
 string invNames[MAX_ITEMS];
@@ -138,6 +153,8 @@ int dessertPrices[3] = {
 
 
 
+
+//  FUNCTIONS USED BY THE GUIs
 // =====================================================
 //  FUNCTIONS USED BY THE GUI (no cin / cout inside)
 // =====================================================
@@ -145,6 +162,7 @@ int dessertPrices[3] = {
 string getCategoryName(int category)
 {
 	if (category >= 1 && category <= NUM_CATEGORIES)
+
 		return categoryNames[category - 1];
 	return "";
 }
@@ -244,6 +262,7 @@ void clearInvoice()
 {
 	invCount = 0;
 }
+
 
 
 // =====================================================
@@ -468,12 +487,106 @@ void printInvoice()
 
 
 
+// Sets the date.
+void loadDate()
+{
+	ifstream inFile("date.txt");
+
+	if (inFile >> currentDay >> currentMonth >> currentYear)
+	{
+		// This if condition will only run after the first date is stored .
+		inFile.close();
+
+		tm t = {};
+		t.tm_mday = currentDay + 1;
+		t.tm_mon = currentMonth - 1;
+		t.tm_year = currentYear - 1900;
+		t.tm_hour = 12;
+		mktime(&t);
+
+		currentDay = t.tm_mday;
+		currentMonth = t.tm_mon + 1;
+		currentYear = t.tm_year + 1900;
+	}
+	else
+	{
+		// first run .
+		time_t now = time(0);
+		tm t;
+		localtime_s(&t, &now);
+
+		currentDay = t.tm_mday;
+		currentMonth = t.tm_mon + 1;
+		currentYear = t.tm_year + 1900;
+	}
+
+	saveDate();
+}
+
+void saveDate()
+{
+	ofstream outFile("date.txt");
+	outFile << currentDay << " " << currentMonth << " " << currentYear;
+	outFile.close();
+}
+
+// returns the date.
+string getCurrentDate()
+{
+	string d = to_string(currentDay);
+	string m = to_string(currentMonth);
+	if (currentDay < 10)   d = "0" + d;
+	if (currentMonth < 10) m = "0" + m;
+	return d + "-" + m + "-" + to_string(currentYear);
+}
+
+// adds the current invoice to the end of sales.txt
+void saveInvoiceToFile()
+{
+	if (invCount == 0)
+		return;
+
+	ofstream outFile("sales.txt", ios::app);   // app = append, keeps old data
+	if (!outFile)
+	{
+		cout << "Could not open sales file." << endl;
+		return;
+	}
+
+	outFile << "Date: " << getCurrentDate() << endl;
+	for (int i = 0; i < invCount; i++)
+		outFile << invNames[i] << " x" << invQty[i] << " = Rs " << invPrices[i] * invQty[i] << endl;
+	outFile << "TOTAL: Rs " << getInvoiceTotal() << endl;
+	outFile << "-----------------------" << endl;
+
+	outFile.close();
+}
+
+// prints everything saved in sales.txt
+void viewSalesHistory()
+{
+	ifstream inFile("sales.txt");
+	if (!inFile)
+	{
+		cout << "No sales recorded yet." << endl;
+		return;
+	}
+
+	string line;
+	while (getline(inFile, line))
+		cout << line << endl;
+
+	inFile.close();
+}
+
+
 //PROGRAM EXECUTION STARTS FROM HERE.
 
-const bool USE_GUI = true;   // true = window with buttons, false = old console version
+const bool USE_GUI = true;
 
 int main()
 {
+	loadDate();
 	if (USE_GUI)
 	{
 		runGUI();
