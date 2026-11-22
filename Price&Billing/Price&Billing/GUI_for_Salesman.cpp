@@ -123,6 +123,7 @@ int buildButtons(Screen screen, int category, Button buttons[])
 }
 
 //  MAIN GUI FUNCTION 
+// ================= MAIN GUI FUNCTION =================
 
 void runGUI()
 {
@@ -153,6 +154,7 @@ void runGUI()
 		int buttonCount = buildButtons(screen, category, buttons);
 
 		// EVENTS
+		// ---------- EVENTS ----------
 		while (const optional<sf::Event> event = window.pollEvent())
 		{
 			if (event->is<sf::Event::Closed>())
@@ -282,6 +284,7 @@ void runGUI()
 			break;
 
 		//  DRAWING
+		// ---------- DRAWING ----------
 		window.clear(sf::Color::Cyan);
 
 		sf::Vector2f mouse(sf::Mouse::getPosition(window));
@@ -307,6 +310,7 @@ void runGUI()
 		{
 			drawText(window, font, "INVOICE", 500, 20, 44, true);
 			drawText(window, font, "Date: " + getCurrentDate(), 700, 35, 24);
+
 			int count = getInvoiceCount();
 
 			if (count == 0)

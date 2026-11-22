@@ -8,6 +8,7 @@ using namespace std;
 
 
 //FUNCTION PROTOTYPES 
+//FUNCTION PROTOTYPES (console version)
 int displayBurgers();
 int displaySandwiches();
 int displaySides();
@@ -30,6 +31,7 @@ void saveInvoiceToFile();
 void viewSalesHistory();
 
 //FUNCTION PROTOTYPES ( also declared in GUI_forsales.h)
+//FUNCTION PROTOTYPES (used by the GUI, also declared in GUI_forsales.h)
 string getCategoryName(int category);
 int getItemCount(int category);
 string getItemName(int category, int pick);
@@ -153,6 +155,9 @@ int dessertPrices[3] = {
 
 
 //  FUNCTIONS USED BY THE GUIs
+// =====================================================
+//  FUNCTIONS USED BY THE GUI (no cin / cout inside)
+// =====================================================
 
 string getCategoryName(int category)
 {
@@ -260,6 +265,9 @@ void clearInvoice()
 
 
 
+// =====================================================
+//  CONSOLE VERSION (cin / cout)
+// =====================================================
 
 int displayBurgers()
 {
