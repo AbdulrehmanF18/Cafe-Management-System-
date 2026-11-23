@@ -2,6 +2,7 @@
 #include "registertion.cpp"
 #include "3rd_page_project.cpp"
 #include "main_control_box.cpp"
+#include "Price&Billing.cpp"
 
 int main()
 {
@@ -37,7 +38,11 @@ int main()
             {
                 openMainControlBox();
             }
-
+            else if(dashboardResult == 2)
+            {
+                SalesSection();
+            }
+                
             break;
         }
     }
