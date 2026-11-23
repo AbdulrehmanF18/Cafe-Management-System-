@@ -74,6 +74,7 @@ int openThirdScreen()
                     else if (salesButton.getGlobalBounds().contains(mousePos))
                     {
                         statusText.setString("Sales button clicked");
+                        return 2;
                     }
                     else if (reportButton.getGlobalBounds().contains(mousePos))
                     {
