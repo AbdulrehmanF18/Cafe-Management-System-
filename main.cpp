@@ -1,11 +1,14 @@
 #include "signin.cpp"
 #include "registertion.cpp"
 #include "3rd_page_project.cpp"
-#include "main_control_box.cpp"
-#include "Price&Billing.cpp"
+#include "shared_data.cpp"
+#include "reports.cpp"
+// #include "Price&Billing.cpp"
 
 int main()
 {
+    loadDate();
+
     while (true)
     {
         int signInResult = openSignInScreen();
@@ -36,13 +39,13 @@ int main()
 
             if (dashboardResult == 3)
             {
-                openMainControlBox();
+                openReportsPage();
             }
-            else if(dashboardResult == 2)
+            else if (dashboardResult == 2)
             {
-                SalesSection();
+                //  SalesSection();
             }
-                
+
             break;
         }
     }
