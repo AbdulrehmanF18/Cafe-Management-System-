@@ -1,0 +1,21 @@
+101 1 500 1 Classic Cheeseburger
+102 1 600 1 Spicy Zinger Burger
+103 1 700 1 Black Beast Burger
+104 1 650 1 Smoky BBQ Burger
+105 1 800 1 Double Trouble Burger
+201 2 550 1 Grilled Chicken Sandwich
+202 2 500 1 Crispy Chicken Wrap
+203 2 650 1 Beef Fajita Wrap
+301 3 250 1 Classic Fries
+302 3 400 1 Loaded Fries
+303 3 350 1 Chicken Nuggets
+304 3 300 1 Onion Rings
+401 4 300 1 Blue Lagoon Crusher
+402 4 300 1 Strawberry Crusher
+403 4 300 1 Mango Crusher
+404 4 400 1 Chocolate Milkshake
+405 4 450 1 Oreo Milkshake
+406 4 150 1 Soft Drinks
+501 5 300 1 Chocolate Brownie
+502 5 400 1 Molten Lava Cake
+503 5 200 1 Ice Cream
