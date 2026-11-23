@@ -19,6 +19,7 @@ void customerPortal();
 bool addToInvoice(string name, int price, int qty);
 void takeOrder(int category, int pick);
 void printInvoice();
+void SalesSection();
 
 //FUNCTION PROTOTYPES for date data .
 
@@ -572,12 +573,11 @@ void viewSalesHistory()
 }
 
 
-//PROGRAM EXECUTION STARTS FROM HERE.
 
-const bool USE_GUI = true;
 
-int main()
+void SalesSection()
 {
+	const bool USE_GUI = true;
 	loadDate();
 	if (USE_GUI)
 	{
@@ -589,5 +589,4 @@ int main()
 		printInvoice();
 	}
 
-	return 0;
 }
