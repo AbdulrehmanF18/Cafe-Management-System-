@@ -117,9 +117,7 @@ inline int loadAllOrders(Order orders[])
     return orderCount;
 }
 
-// ============================================================
 //  DAILY aggregation
-// ============================================================
 struct DailyReport
 {
     int orders;
@@ -201,9 +199,7 @@ inline DailyReport getDailyReport(int d, int m, int y)
     return r;
 }
 
-// ============================================================
 //  WEEKLY aggregation
-// ============================================================
 struct WeeklyReport
 {
     int ordersPerDay[7];
@@ -311,9 +307,9 @@ inline WeeklyReport getWeeklyReport(int endD, int endM, int endY)
     return r;
 }
 
-// ============================================================
+
 //  Name lookup by ID for display
-// ============================================================
+
 inline string productNameByID(int id)
 {
     for (int i = 0; i < productCount; i++)
@@ -322,9 +318,9 @@ inline string productNameByID(int id)
     return "(unknown)";
 }
 
-// ============================================================
+
 //  Draw the whole Reports page
-// ============================================================
+
 inline int openReportsPage()
 {
     RenderWindow window(VideoMode({950, 700}), "Cafe Management System - Reports");
@@ -399,7 +395,7 @@ inline int openReportsPage()
 
         if (activeReport == 0)
         {
-            // ===================== DAILY =====================
+            // DAILY 
             Text title(font, "Daily Summary Report", 20);
             title.setFillColor(Color(41, 128, 185));
             title.setPosition({70.f, 140.f});
@@ -492,7 +488,7 @@ inline int openReportsPage()
         }
         else
         {
-            // ===================== WEEKLY =====================
+            //  WEEKLY 
             Text title(font, "Weekly Performance (Last 7 Days)", 20);
             title.setFillColor(Color(41, 128, 185));
             title.setPosition({70.f, 140.f});
