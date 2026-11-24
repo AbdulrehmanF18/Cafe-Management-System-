@@ -1,3 +1,4 @@
+#pragma once
 #include<iostream>
 #include<string>
 #include<fstream>
@@ -5,6 +6,7 @@
 #include "GUI_forsales.h"
 
 using namespace std;
+
 
 //FUNCTION PROTOTYPES 
 int displayBurgers();
@@ -29,7 +31,7 @@ string getCurrentDate();
 void saveInvoiceToFile();
 void viewSalesHistory();
 
-//FUNCTION PROTOTYPES (used by the GUI)
+//FUNCTION PROTOTYPES ( also declared in GUI_forsales.h)
 string getCategoryName(int category);
 int getItemCount(int category);
 string getItemName(int category, int pick);
@@ -41,7 +43,6 @@ int getInvoiceQty(int index);
 int getInvoiceLineTotal(int index);
 int getInvoiceTotal();
 void clearInvoice();
-
 
 //Global Variables for storing menu items and their prices
 
@@ -154,7 +155,6 @@ int dessertPrices[3] = {
 
 //  FUNCTIONS USED BY THE GUIs
 
-
 string getCategoryName(int category)
 {
 	if (category >= 1 && category <= NUM_CATEGORIES)
@@ -208,7 +208,7 @@ int getItemPrice(int category, int pick)
 	}
 }
 
-
+// checks the choice and adds the item to the invoice; returns true if it was added
 bool addItemToOrder(int category, int pick, int qty)
 {
 	if (qty <= 0)
@@ -258,7 +258,6 @@ void clearInvoice()
 {
 	invCount = 0;
 }
-
 
 
 
@@ -488,7 +487,6 @@ void loadDate()
 
 	if (inFile >> currentDay >> currentMonth >> currentYear)
 	{
-
 		inFile.close();
 
 		tm t = {};
@@ -575,6 +573,7 @@ void viewSalesHistory()
 
 
 
+
 void SalesSection()
 {
 	const bool USE_GUI = true;
@@ -588,5 +587,4 @@ void SalesSection()
 		customerPortal();
 		printInvoice();
 	}
-
 }
