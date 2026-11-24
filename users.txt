@@ -2,3 +2,5 @@ zaman,zaman@yopmail.com,Admin,mp123
 zaman,zaman@yopmail.com,Admin,mp123
 zaman,zaman@yopmail.com,Admin,mp123
 samiullah,sami@project.com,Admin,project123
+azlanasad,azlan@fast.com,Admin,123456
+zaman,zaman@yopmail.com,Admin,mp123

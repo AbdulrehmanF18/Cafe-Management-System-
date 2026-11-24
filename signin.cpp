@@ -12,28 +12,23 @@ bool checkLogin(string enteredEmail, string enteredPassword)
 
     if (!file.is_open())
     {
-        cout << "Unable to open users.txt";
+        cout << "Unable to open users.txt" << endl;
         return false;
     }
 
     string line;
     string storedName;
     string storedEmail;
-    string storedPassword;
     string storedRole;
-      cout << "inside funtion " << endl;
+    string storedPassword;
+
     while (getline(file, line))
     {
         stringstream ss(line);
         getline(ss, storedName, ',');
-        cout << storedRole;
         getline(ss, storedEmail, ',');
-        cout << storedEmail;
         getline(ss, storedRole, ',');
-        cout << storedRole;
-        getline(ss, storedPassword, ','); 
-        cout << storedPassword;
-        
+        getline(ss, storedPassword, ',');
 
         if (enteredEmail == storedEmail && enteredPassword == storedPassword)
         {
@@ -46,54 +41,76 @@ bool checkLogin(string enteredEmail, string enteredPassword)
     return false;
 }
 
-
 int openSignInScreen()
 {
-    RenderWindow window(VideoMode({600, 665}), "Cafe Management System - Sign In");
+    RenderWindow window(VideoMode({800, 800}), "Cafe Management System - Sign In");
     window.setFramerateLimit(60);
 
-    RectangleShape emailbox({400.f, 45.f});
-    emailbox.setPosition({100.f, 110.f});
+    Color lightGreyColor(211, 211, 211);
+
+    Font font("Arial.ttf");
+
+    Text cafeTitle(font, "BREW & BITE CAFE", 42);
+    cafeTitle.setPosition({172.f, 40.f});
+    cafeTitle.setFillColor(Color::Black);
+    cafeTitle.setStyle(Text::Bold);
+
+    Text welcomeSubtitle(font, "welcome foodie you are entring your comfort zone!", 21);
+    welcomeSubtitle.setPosition({148.f, 102.f});
+    welcomeSubtitle.setFillColor(Color::Black);
+    welcomeSubtitle.setStyle(Text::Italic);
+
+    RectangleShape emailbox({500.f, 48.f});
+    emailbox.setPosition({150.f, 220.f});
     emailbox.setFillColor(Color::White);
     emailbox.setOutlineThickness(2.f);
     emailbox.setOutlineColor(Color::Black);
 
-    RectangleShape passwordbox({400.f, 45.f});
-    passwordbox.setPosition({100.f, 220.f});
+    RectangleShape passwordbox({500.f, 48.f});
+    passwordbox.setPosition({150.f, 360.f});
     passwordbox.setFillColor(Color::White);
     passwordbox.setOutlineThickness(2.f);
     passwordbox.setOutlineColor(Color::Black);
 
-    Font font("Arial.ttf");
-
     Text emailtext(font, "", 20);
-    emailtext.setPosition({112.f, 118.f});
+    emailtext.setPosition({162.f, 230.f});
     emailtext.setFillColor(Color::Black);
 
     Text passwordtext(font, "", 20);
-    passwordtext.setPosition({112.f, 228.f});
+    passwordtext.setPosition({162.f, 370.f});
     passwordtext.setFillColor(Color::Black);
 
     Text emaillable(font, "E-MAIL:", 20);
-    emaillable.setPosition({100.f, 65.f});
+    emaillable.setPosition({150.f, 180.f});
     emaillable.setFillColor(Color::Black);
 
     Text passwordlable(font, "Password:", 20);
-    passwordlable.setPosition({100.f, 165.f});
+    passwordlable.setPosition({150.f, 320.f});
     passwordlable.setFillColor(Color::Black);
 
+    Text signinButton(font, "SIGN IN", 28);
+    signinButton.setPosition({345.f, 465.f});
+    signinButton.setFillColor(Color::Black);
+
+    Text statusMessage(font, "", 19);
+    statusMessage.setPosition({185.f, 520.f});
+    statusMessage.setFillColor(Color::Red);
+
     Text registerText(font, "Don't have an account? Register", 20);
-    registerText.setPosition({110.f, 560.f});
+    registerText.setPosition({255.f, 690.f});
     registerText.setFillColor(Color::Blue);
     registerText.setStyle(Text::Underlined);
 
-    Text signinButton(font, "SIGN IN", 28);
-    signinButton.setPosition({230.f, 330.f});
-    signinButton.setFillColor(Color::Black);
+    // Blinking cursor setup
+    RectangleShape cursor({2.f, 24.f});
+    cursor.setFillColor(Color::Black);
+    Clock blinkClock;
+    float blinkInterval = 0.5f;
+    bool showCursor = true;
 
     string email = "";
     string password = "";
-    int input_fields = 0;
+    int input_fields = 0; // 1 = email, 2 = password
 
     while (window.isOpen())
     {
@@ -114,10 +131,16 @@ int openSignInScreen()
                     if (emailbox.getGlobalBounds().contains(mousePos))
                     {
                         input_fields = 1;
+                        statusMessage.setString("");
+                        showCursor = true;
+                        blinkClock.restart();
                     }
                     else if (passwordbox.getGlobalBounds().contains(mousePos))
                     {
                         input_fields = 2;
+                        statusMessage.setString("");
+                        showCursor = true;
+                        blinkClock.restart();
                     }
                     else if (registerText.getGlobalBounds().contains(mousePos))
                     {
@@ -126,10 +149,8 @@ int openSignInScreen()
                     }
                     else if (signinButton.getGlobalBounds().contains(mousePos))
                     {
-                        cout << email <<  password;
                         if (checkLogin(email, password))
                         {
-  
                             cout << "Login Successful!" << endl;
                             window.close();
 
@@ -137,10 +158,10 @@ int openSignInScreen()
                         }
                         else
                         {
-                            cout << "Invalid Email or Password!" << endl;
+                            cout << "You are unauthorized, please register first!" << endl;
+                            statusMessage.setString("You are unauthorized, please register first!");
                         }
                     }
-
                     else
                     {
                         input_fields = 0;
@@ -152,6 +173,8 @@ int openSignInScreen()
             {
                 if (input_fields != 0)
                 {
+                    statusMessage.setString("");
+
                     if (textEvent->unicode == 8)
                     {
                         if (input_fields == 1 && !email.empty())
@@ -183,11 +206,41 @@ int openSignInScreen()
 
                     emailtext.setString(email);
                     passwordtext.setString(password);
+
+                    // Keep cursor visible while typing
+                    showCursor = true;
+                    blinkClock.restart();
                 }
             }
         }
 
-        window.clear(Color::Cyan);
+        // Blink and move cursor in the active text field
+        if (input_fields != 0)
+        {
+            if (blinkClock.getElapsedTime().asSeconds() >= blinkInterval)
+            {
+                showCursor = !showCursor;
+                blinkClock.restart();
+            }
+
+            if (input_fields == 1)
+            {
+                FloatRect bounds = emailtext.getGlobalBounds();
+                float x = email.empty() ? emailtext.getPosition().x : (bounds.position.x + bounds.size.x);
+                cursor.setPosition({x, emailtext.getPosition().y + 2.f});
+            }
+            else if (input_fields == 2)
+            {
+                FloatRect bounds = passwordtext.getGlobalBounds();
+                float x = password.empty() ? passwordtext.getPosition().x : (bounds.position.x + bounds.size.x);
+                cursor.setPosition({x, passwordtext.getPosition().y + 2.f});
+            }
+        }
+
+        window.clear(lightGreyColor);
+        window.draw(cafeTitle);
+        window.draw(welcomeSubtitle);
+
         window.draw(emailbox);
         window.draw(emaillable);
         window.draw(emailtext);
@@ -196,7 +249,13 @@ int openSignInScreen()
         window.draw(passwordlable);
         window.draw(passwordtext);
 
+        if (input_fields != 0 && showCursor)
+        {
+            window.draw(cursor);
+        }
+
         window.draw(signinButton);
+        window.draw(statusMessage);
         window.draw(registerText);
         window.display();
     }
