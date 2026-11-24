@@ -7,7 +7,6 @@
 
 using namespace std;
 
-
 //FUNCTION PROTOTYPES 
 int displayBurgers();
 int displaySandwiches();
