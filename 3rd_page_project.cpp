@@ -8,48 +8,62 @@ using namespace sf;
 
 int openThirdScreen()
 {
-    RenderWindow window(VideoMode({600, 665}), "Cafe Management System - Dashboard");
+    RenderWindow window(VideoMode({800, 750}), "Cafe Management System - Dashboard");
     window.setFramerateLimit(60);
 
     Font font("Arial.ttf");
 
-    Text title(font, "Dashboard", 32);
-    title.setFillColor(Color::Black);
-    title.setPosition({220.f, 40.f});
+    // Cafe theme colors
+    Color creamBackground(246, 241, 233);
+    Color espressoBorder(58, 38, 24);
+    Color latteCard(255, 252, 247);
+    Color mochaAccent(111, 78, 55);
 
-    RectangleShape productButton({300.f, 60.f});
-    productButton.setPosition({150.f, 140.f});
-    productButton.setFillColor(Color::White);
-    productButton.setOutlineThickness(2.f);
-    productButton.setOutlineColor(Color::Black);
+    // Cafe Title & Smaller Subtitle
+    Text cafeTitle(font, "BREW & BITE CAFE", 36);
+    cafeTitle.setFillColor(espressoBorder);
+    cafeTitle.setStyle(Text::Bold);
+    cafeTitle.setPosition({205.f, 38.f});
 
-    RectangleShape salesButton({300.f, 60.f});
-    salesButton.setPosition({150.f, 250.f});
-    salesButton.setFillColor(Color::White);
-    salesButton.setOutlineThickness(2.f);
-    salesButton.setOutlineColor(Color::Black);
+    Text subTitle(font, "Main Menu of Brew and Bite Cafe", 18);
+    subTitle.setFillColor(mochaAccent);
+    subTitle.setStyle(Text::Italic);
+    subTitle.setPosition({268.f, 92.f});
 
-    RectangleShape reportButton({300.f, 60.f});
-    reportButton.setPosition({150.f, 360.f});
-    reportButton.setFillColor(Color::White);
-    reportButton.setOutlineThickness(2.f);
-    reportButton.setOutlineColor(Color::Black);
+    // All three buttons
+    RectangleShape productButton({340.f, 66.f});
+    productButton.setPosition({230.f, 175.f});
+    productButton.setFillColor(latteCard);
+    productButton.setOutlineThickness(2.5f);
+    productButton.setOutlineColor(espressoBorder);
+
+    RectangleShape salesButton({340.f, 66.f});
+    salesButton.setPosition({230.f, 280.f});
+    salesButton.setFillColor(latteCard);
+    salesButton.setOutlineThickness(2.5f);
+    salesButton.setOutlineColor(espressoBorder);
+
+    RectangleShape reportButton({340.f, 66.f});
+    reportButton.setPosition({230.f, 385.f});
+    reportButton.setFillColor(latteCard);
+    reportButton.setOutlineThickness(2.5f);
+    reportButton.setOutlineColor(espressoBorder);
 
     Text productText(font, "Product", 26);
-    productText.setFillColor(Color::Black);
-    productText.setPosition({245.f, 155.f});
+    productText.setFillColor(espressoBorder);
+    productText.setPosition({352.f, 192.f});
 
     Text salesText(font, "Sales", 26);
-    salesText.setFillColor(Color::Black);
-    salesText.setPosition({255.f, 265.f});
+    salesText.setFillColor(espressoBorder);
+    salesText.setPosition({368.f, 297.f});
 
     Text reportText(font, "Report", 26);
-    reportText.setFillColor(Color::Black);
-    reportText.setPosition({250.f, 375.f});
+    reportText.setFillColor(espressoBorder);
+    reportText.setPosition({362.f, 402.f});
 
     Text statusText(font, "", 20);
-    statusText.setFillColor(Color::Black);
-    statusText.setPosition({170.f, 500.f});
+    statusText.setFillColor(mochaAccent);
+    statusText.setPosition({290.f, 500.f});
 
     while (window.isOpen())
     {
@@ -69,15 +83,18 @@ int openThirdScreen()
 
                     if (productButton.getGlobalBounds().contains(mousePos))
                     {
+                        statusText.setString("Opening Product page...");
                         openInventoryPage();
                     }
                     else if (salesButton.getGlobalBounds().contains(mousePos))
                     {
                         statusText.setString("Sales button clicked");
+                        window.close();
                         return 2;
                     }
                     else if (reportButton.getGlobalBounds().contains(mousePos))
                     {
+                        statusText.setString("Report button clicked");
                         window.close();
                         return 3;
                     }
@@ -85,8 +102,9 @@ int openThirdScreen()
             }
         }
 
-        window.clear(Color::Cyan);
-        window.draw(title);
+        window.clear(creamBackground);
+        window.draw(cafeTitle);
+        window.draw(subTitle);
         window.draw(productButton);
         window.draw(salesButton);
         window.draw(reportButton);
