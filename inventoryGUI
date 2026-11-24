@@ -1,0 +1,568 @@
+
+#include <SFML/Graphics.hpp>
+#include <optional>
+#include <string>
+#include <cctype>
+#include "Inventory.cpp"
+
+using namespace sf;
+using namespace std;
+
+int openInventoryPage()
+{
+    loadInventory();
+
+    RenderWindow window(VideoMode({950, 700}), "Cafe Management System - Inventory");
+    window.setFramerateLimit(60);
+
+    Font font("Arial.ttf");
+
+    int selectedIndex = -1;
+    int menuIndex = -1;
+
+    bool addMode = false;
+    int inputFocus = 0;
+    int newCategory = 1;
+
+    string newName = "";
+    string newPrice = "";
+    string message = "";
+
+    RectangleShape backButton({120.f, 45.f});
+    backButton.setPosition({30.f, 25.f});
+    backButton.setFillColor(Color(189, 195, 199));
+
+    RectangleShape addButton({160.f, 45.f});
+    addButton.setPosition({400.f, 25.f});
+    addButton.setFillColor(Color(41, 128, 185));
+
+    RectangleShape availableButton({160.f, 45.f});
+    availableButton.setPosition({590.f, 25.f});
+    availableButton.setFillColor(Color(39, 174, 96));
+
+    RectangleShape unavailableButton({160.f, 45.f});
+    unavailableButton.setPosition({770.f, 25.f});
+    unavailableButton.setFillColor(Color(192, 57, 43));
+
+    RectangleShape nameBox({320.f, 40.f});
+    nameBox.setPosition({350.f, 215.f});
+    nameBox.setFillColor(Color::White);
+    nameBox.setOutlineThickness(2.f);
+    nameBox.setOutlineColor(Color(127, 140, 141));
+
+    RectangleShape priceBox({320.f, 40.f});
+    priceBox.setPosition({350.f, 285.f});
+    priceBox.setFillColor(Color::White);
+    priceBox.setOutlineThickness(2.f);
+    priceBox.setOutlineColor(Color(127, 140, 141));
+
+    RectangleShape addConfirm({130.f, 45.f});
+    addConfirm.setPosition({330.f, 560.f});
+    addConfirm.setFillColor(Color(39, 174, 96));
+
+    RectangleShape cancelButton({130.f, 45.f});
+    cancelButton.setPosition({490.f, 560.f});
+    cancelButton.setFillColor(Color(192, 57, 43));
+
+    while (window.isOpen())
+    {
+        while (optional<Event> event = window.pollEvent())
+        {
+            if (event->is<Event::Closed>())
+            {
+                window.close();
+                return 0;
+            }
+
+            if (const auto* textEvent = event->getIf<Event::TextEntered>())
+            {
+                if (addMode && inputFocus != 0)
+                {
+                    if (textEvent->unicode >= 32 && textEvent->unicode <= 126)
+                    {
+                        char character = static_cast<char>(textEvent->unicode);
+
+                        if (inputFocus == 1 && newName.length() < 40)
+                            newName += character;
+
+                        else if (inputFocus == 2 &&
+                                 isdigit(static_cast<unsigned char>(character)) &&
+                                 newPrice.length() < 8)
+                            newPrice += character;
+                    }
+                }
+            }
+
+            if (const auto* keyEvent = event->getIf<Event::KeyPressed>())
+            {
+                if (addMode)
+                {
+                    if (keyEvent->code == Keyboard::Key::Backspace)
+                    {
+                        if (inputFocus == 1 && !newName.empty())
+                            newName.pop_back();
+
+                        else if (inputFocus == 2 && !newPrice.empty())
+                            newPrice.pop_back();
+                    }
+
+                    if (keyEvent->code == Keyboard::Key::Escape)
+                    {
+                        addMode = false;
+                        message = "";
+                    }
+                }
+            }
+
+            if (const auto* mouseEvent = event->getIf<Event::MouseButtonPressed>())
+            {
+                if (mouseEvent->button != Mouse::Button::Left)
+                    continue;
+
+                Vector2f mousePos = window.mapPixelToCoords(mouseEvent->position);
+
+                // ADD PRODUCT FORM
+
+                if (addMode)
+                {
+                    if (nameBox.getGlobalBounds().contains(mousePos))
+                    {
+                        inputFocus = 1;
+                    }
+                    else if (priceBox.getGlobalBounds().contains(mousePos))
+                    {
+                        inputFocus = 2;
+                    }
+                    else if (cancelButton.getGlobalBounds().contains(mousePos))
+                    {
+                        addMode = false;
+                        message = "";
+                    }
+                    else if (addConfirm.getGlobalBounds().contains(mousePos))
+                    {
+                        if (newName.empty())
+                        {
+                            message = "Enter product name!";
+                        }
+                        else if (newPrice.empty() || stoi(newPrice) <= 0)
+                        {
+                            message = "Enter a valid price!";
+                        }
+                        else
+                        {
+                            int price = stoi(newPrice);
+                            int id = generateProductID(newCategory);
+
+                            if (addProduct(id, newName, price, newCategory))
+                            {
+                                saveInventory();
+
+                                newName = "";
+                                newPrice = "";
+                                newCategory = 1;
+                                message = "";
+                                addMode = false;
+                                selectedIndex = -1;
+                            }
+                            else
+                            {
+                                message = "Inventory is full!";
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 1; i <= 5; i++)
+                        {
+                            float y = 350.f + (i - 1) * 38.f;
+
+                            if (mousePos.x >= 350.f &&
+                                mousePos.x <= 670.f &&
+                                mousePos.y >= y &&
+                                mousePos.y <= y + 32.f)
+                            {
+                                newCategory = i;
+                                break;
+                            }
+                        }
+                    }
+
+                    continue;
+                }
+
+                // BACK BUTTON
+
+                if (backButton.getGlobalBounds().contains(mousePos))
+                {
+                    window.close();
+                    return 1;
+                }
+
+                // ADD PRODUCT BUTTON
+
+                if (addButton.getGlobalBounds().contains(mousePos))
+                {
+                    addMode = true;
+                    newName = "";
+                    newPrice = "";
+                    newCategory = 1;
+                    inputFocus = 1;
+                    message = "";
+                    menuIndex = -1;
+                    continue;
+                }
+
+                // AVAILABLE BUTTON
+
+                if (selectedIndex >= 0 &&
+                    availableButton.getGlobalBounds().contains(mousePos))
+                {
+                    productAvailable[selectedIndex] = true;
+                    saveInventory();
+                    continue;
+                }
+
+                // UNAVAILABLE BUTTON
+
+                if (selectedIndex >= 0 &&
+                    unavailableButton.getGlobalBounds().contains(mousePos))
+                {
+                    productAvailable[selectedIndex] = false;
+                    saveInventory();
+                    continue;
+                }
+
+                // DELETE OPTION
+
+                if (menuIndex >= 0)
+                {
+                    float menuY = 170.f + menuIndex * 40.f + 2.f;
+
+                    if (menuY > 650.f)
+                        menuY = 650.f;
+
+                    FloatRect deleteRect({750.f, menuY}, {150.f, 38.f});
+
+                    if (deleteRect.contains(mousePos))
+                    {
+                        for (int i = menuIndex; i < productCount - 1; i++)
+                        {
+                            productIDs[i] = productIDs[i + 1];
+                            productNames[i] = productNames[i + 1];
+                            productPrices[i] = productPrices[i + 1];
+                            productCategories[i] = productCategories[i + 1];
+                            productAvailable[i] = productAvailable[i + 1];
+                        }
+
+                        productCount--;
+
+                        saveInventory();
+
+                        selectedIndex = -1;
+                        menuIndex = -1;
+
+                        continue;
+                    }
+
+                    menuIndex = -1;
+                }
+
+                // THREE DOTS MENU AND PRODUCT SELECTION
+
+                bool clickedRow = false;
+
+                for (int i = 0; i < productCount && i < 13; i++)
+                {
+                    float y = 170.f + i * 40.f;
+
+                    if (mousePos.y >= y &&
+                        mousePos.y <= y + 38.f &&
+                        mousePos.x >= 875.f &&
+                        mousePos.x <= 920.f)
+                    {
+                        menuIndex = (menuIndex == i) ? -1 : i;
+                        clickedRow = true;
+                        break;
+                    }
+
+                    if (mousePos.y >= y &&
+                        mousePos.y <= y + 38.f &&
+                        mousePos.x >= 30.f &&
+                        mousePos.x <= 920.f)
+                    {
+                        selectedIndex = i;
+                        menuIndex = -1;
+                        clickedRow = true;
+                        break;
+                    }
+                }
+
+                if (!clickedRow)
+                {
+                    selectedIndex = -1;
+                    menuIndex = -1;
+                }
+            }
+        }
+
+        // DRAWING
+
+        window.clear(Color(245, 247, 250));
+
+        Text title(font, "Product Inventory", 30);
+        title.setFillColor(Color(44, 62, 80));
+        title.setPosition({350.f, 78.f});
+        window.draw(title);
+
+        window.draw(backButton);
+        Text backText(font, "Back", 18);
+        backText.setFillColor(Color::Black);
+        backText.setPosition({55.f, 35.f});
+        window.draw(backText);
+
+        window.draw(addButton);
+        Text addText(font, "Add Product", 17);
+        addText.setFillColor(Color::White);
+        addText.setPosition({425.f, 36.f});
+        window.draw(addText);
+
+        window.draw(availableButton);
+        Text availableText(font, "Available", 16);
+        availableText.setFillColor(Color::White);
+        availableText.setPosition({628.f, 37.f});
+        window.draw(availableText);
+
+        window.draw(unavailableButton);
+        Text unavailableText(font, "Unavailable", 16);
+        unavailableText.setFillColor(Color::White);
+        unavailableText.setPosition({800.f, 37.f});
+        window.draw(unavailableText);
+
+        // TABLE HEADER
+
+        RectangleShape header({890.f, 40.f});
+        header.setPosition({30.f, 120.f});
+        header.setFillColor(Color(52, 73, 94));
+        window.draw(header);
+
+        Text idHeader(font, "ID", 16);
+        idHeader.setFillColor(Color::White);
+        idHeader.setPosition({45.f, 132.f});
+        window.draw(idHeader);
+
+        Text nameHeader(font, "Product Name", 16);
+        nameHeader.setFillColor(Color::White);
+        nameHeader.setPosition({150.f, 132.f});
+        window.draw(nameHeader);
+
+        Text priceHeader(font, "Price", 16);
+        priceHeader.setFillColor(Color::White);
+        priceHeader.setPosition({520.f, 132.f});
+        window.draw(priceHeader);
+
+        Text categoryHeader(font, "Category", 16);
+        categoryHeader.setFillColor(Color::White);
+        categoryHeader.setPosition({650.f, 132.f});
+        window.draw(categoryHeader);
+
+        Text statusHeader(font, "Status", 16);
+        statusHeader.setFillColor(Color::White);
+        statusHeader.setPosition({770.f, 132.f});
+        window.draw(statusHeader);
+
+        Text actionHeader(font, "Edit", 16);
+        actionHeader.setFillColor(Color::White);
+        actionHeader.setPosition({875.f, 132.f});
+        window.draw(actionHeader);
+
+        // PRODUCT ROWS
+
+        for (int i = 0; i < productCount && i < 13; i++)
+        {
+            float y = 170.f + i * 40.f;
+
+            RectangleShape row({890.f, 38.f});
+            row.setPosition({30.f, y});
+
+            row.setFillColor(selectedIndex == i
+                                 ? Color(174, 214, 241)
+                                 : (i % 2 == 0
+                                        ? Color::White
+                                        : Color(236, 240, 241)));
+
+            window.draw(row);
+
+            Text idText(font, to_string(productIDs[i]), 15);
+            idText.setFillColor(Color::Black);
+            idText.setPosition({45.f, y + 8.f});
+            window.draw(idText);
+
+            Text nameText(font, productNames[i], 15);
+            nameText.setFillColor(Color::Black);
+            nameText.setPosition({150.f, y + 8.f});
+            window.draw(nameText);
+
+            Text priceText(font, "Rs. " + to_string(productPrices[i]), 15);
+            priceText.setFillColor(Color::Black);
+            priceText.setPosition({520.f, y + 8.f});
+            window.draw(priceText);
+
+            Text categoryText(font, getCategoryName(productCategories[i]), 15);
+            categoryText.setFillColor(Color::Black);
+            categoryText.setPosition({650.f, y + 8.f});
+            window.draw(categoryText);
+
+            Text statusText(font,
+                            productAvailable[i] ? "Available" : "Unavailable", 14);
+
+            statusText.setFillColor(productAvailable[i]
+                                        ? Color(39, 174, 96)
+                                        : Color(192, 57, 43));
+
+            statusText.setPosition({770.f, y + 8.f});
+            window.draw(statusText);
+
+            // THREE DOTS
+
+            for (int j = 0; j < 3; j++)
+            {
+                CircleShape dot(2.5f);
+                dot.setFillColor(Color::Black);
+                dot.setPosition({894.f, y + 9.f + j * 8.f});
+                window.draw(dot);
+            }
+        }
+
+        if (productCount == 0)
+        {
+            Text emptyText(font, "No products found", 20);
+            emptyText.setFillColor(Color(127, 140, 141));
+            emptyText.setPosition({390.f, 190.f});
+            window.draw(emptyText);
+        }
+
+        // DELETE MENU
+
+        if (menuIndex >= 0)
+        {
+            float menuY = 170.f + menuIndex * 40.f + 2.f;
+
+            if (menuY > 650.f)
+                menuY = 650.f;
+
+            RectangleShape deleteMenu({150.f, 38.f});
+            deleteMenu.setPosition({750.f, menuY});
+            deleteMenu.setFillColor(Color(192, 57, 43));
+            window.draw(deleteMenu);
+
+            Text deleteText(font, "Delete", 16);
+            deleteText.setFillColor(Color::White);
+            deleteText.setPosition({800.f, menuY + 9.f});
+            window.draw(deleteText);
+        }
+
+        // ADD PRODUCT FORM
+
+        if (addMode)
+        {
+            RectangleShape overlay({950.f, 700.f});
+            overlay.setFillColor(Color(0, 0, 0, 150));
+            window.draw(overlay);
+
+            RectangleShape form({510.f, 540.f});
+            form.setPosition({220.f, 125.f});
+            form.setFillColor(Color(245, 247, 250));
+            window.draw(form);
+
+            Text formTitle(font, "Add New Product", 26);
+            formTitle.setFillColor(Color(44, 62, 80));
+            formTitle.setPosition({350.f, 150.f});
+            window.draw(formTitle);
+
+            Text nameLabel(font, "Product Name:", 17);
+            nameLabel.setFillColor(Color::Black);
+            nameLabel.setPosition({260.f, 225.f});
+            window.draw(nameLabel);
+
+            nameBox.setOutlineColor(inputFocus == 1
+                                        ? Color(41, 128, 185)
+                                        : Color(127, 140, 141));
+            window.draw(nameBox);
+
+            Text nameInput(font, newName + (inputFocus == 1 ? "|" : ""), 16);
+            nameInput.setFillColor(Color::Black);
+            nameInput.setPosition({360.f, 225.f});
+            window.draw(nameInput);
+
+            Text priceLabel(font, "Price:", 17);
+            priceLabel.setFillColor(Color::Black);
+            priceLabel.setPosition({260.f, 295.f});
+            window.draw(priceLabel);
+
+            priceBox.setOutlineColor(inputFocus == 2
+                                         ? Color(41, 128, 185)
+                                         : Color(127, 140, 141));
+            window.draw(priceBox);
+
+            Text priceInput(font, newPrice + (inputFocus == 2 ? "|" : ""), 16);
+            priceInput.setFillColor(Color::Black);
+            priceInput.setPosition({360.f, 295.f});
+            window.draw(priceInput);
+
+            Text categoryLabel(font, "Select Category:", 17);
+            categoryLabel.setFillColor(Color::Black);
+            categoryLabel.setPosition({260.f, 340.f});
+            window.draw(categoryLabel);
+
+            string categories[5] = {
+                "Burgers",
+                "Sandwiches and Wraps",
+                "Sides",
+                "Drinks",
+                "Desserts"
+            };
+
+            for (int i = 1; i <= 5; i++)
+            {
+                float y = 350.f + (i - 1) * 38.f;
+
+                RectangleShape categoryBox({320.f, 32.f});
+                categoryBox.setPosition({350.f, y});
+
+                categoryBox.setFillColor(newCategory == i
+                                             ? Color(174, 214, 241)
+                                             : Color::White);
+
+                window.draw(categoryBox);
+
+                Text categoryText(font, categories[i - 1], 15);
+                categoryText.setFillColor(Color::Black);
+                categoryText.setPosition({365.f, y + 6.f});
+                window.draw(categoryText);
+            }
+
+            Text messageText(font, message, 15);
+            messageText.setFillColor(Color(192, 57, 43));
+            messageText.setPosition({350.f, 535.f});
+            window.draw(messageText);
+
+            window.draw(addConfirm);
+
+            Text confirmText(font, "Add", 17);
+            confirmText.setFillColor(Color::White);
+            confirmText.setPosition({375.f, 572.f});
+            window.draw(confirmText);
+
+            window.draw(cancelButton);
+
+            Text cancelText(font, "Cancel", 17);
+            cancelText.setFillColor(Color::White);
+            cancelText.setPosition({520.f, 572.f});
+            window.draw(cancelText);
+        }
+
+        window.display();
+    }
+
+    return 0;
+}

@@ -11,11 +11,11 @@
 using namespace std;
 using namespace sf;
 
-// ============================================================
+
 //  Pull these globals from your existing files
 //  - currentDay/Month/Year  : defined in #includeiostream.txt
 //  - productIDs/Names/...   : defined in Inventory.cpp
-// ============================================================
+
 extern int currentDay;
 extern int currentMonth;
 extern int currentYear;
@@ -25,10 +25,10 @@ extern int productCount;
 extern int productIDs[];      // FIX 4: size inferred from definition
 extern string productNames[]; // FIX 4: size inferred from definition
 
-// ============================================================
+
 //  Fixed-size arrays — same style as your inventory
 //  FIX 3: MAX_LINES reduced from 60 to 10 to keep Order small
-// ============================================================
+
 const int MAX_ORDERS = 200;
 const int MAX_LINES = 10;
 
@@ -42,10 +42,10 @@ struct Order
     int lineRevenue[MAX_LINES];
 };
 
-// ============================================================
+
 //  Helper: find product ID by name
 //  FIX 2: 'inline' added to prevent multiple-definition errors
-// ============================================================
+
 inline int findProductIDByName(const string &name)
 {
     for (int i = 0; i < productCount; i++)
@@ -54,9 +54,9 @@ inline int findProductIDByName(const string &name)
     return 0;
 }
 
-// ============================================================
+
 //  Parse sales.txt into a fixed array of Orders
-// ============================================================
+
 inline int loadAllOrders(Order orders[])
 {
     int orderCount = 0;
@@ -117,9 +117,7 @@ inline int loadAllOrders(Order orders[])
     return orderCount;
 }
 
-// ============================================================
 //  DAILY aggregation
-// ============================================================
 struct DailyReport
 {
     int orders;
@@ -201,9 +199,7 @@ inline DailyReport getDailyReport(int d, int m, int y)
     return r;
 }
 
-// ============================================================
 //  WEEKLY aggregation
-// ============================================================
 struct WeeklyReport
 {
     int ordersPerDay[7];
@@ -311,9 +307,9 @@ inline WeeklyReport getWeeklyReport(int endD, int endM, int endY)
     return r;
 }
 
-// ============================================================
+
 //  Name lookup by ID for display
-// ============================================================
+
 inline string productNameByID(int id)
 {
     for (int i = 0; i < productCount; i++)
@@ -322,9 +318,9 @@ inline string productNameByID(int id)
     return "(unknown)";
 }
 
-// ============================================================
+
 //  Draw the whole Reports page
-// ============================================================
+
 inline int openReportsPage()
 {
     RenderWindow window(VideoMode({950, 700}), "Cafe Management System - Reports");
@@ -399,7 +395,7 @@ inline int openReportsPage()
 
         if (activeReport == 0)
         {
-            // ===================== DAILY =====================
+            // DAILY 
             Text title(font, "Daily Summary Report", 20);
             title.setFillColor(Color(41, 128, 185));
             title.setPosition({70.f, 140.f});
@@ -492,7 +488,7 @@ inline int openReportsPage()
         }
         else
         {
-            // ===================== WEEKLY =====================
+            //  WEEKLY 
             Text title(font, "Weekly Performance (Last 7 Days)", 20);
             title.setFillColor(Color(41, 128, 185));
             title.setPosition({70.f, 140.f});
