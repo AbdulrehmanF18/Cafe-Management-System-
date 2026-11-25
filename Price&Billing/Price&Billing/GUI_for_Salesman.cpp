@@ -5,10 +5,8 @@
 #include <string>
 #include "GUI_forsales.h"
 
-//FUNCTION PROTOTYPES
+// FUNCTION PROTOTYPES
 void runGUI();
-
-
 
 string getCategoryName(int category);
 int getItemCount(int category);
@@ -21,15 +19,21 @@ int getInvoiceCount();
 std::string getInvoiceName(int index);
 int getInvoiceQty(int index);
 int getInvoiceLineTotal(int index);
-int getInvoiceTotal();
-void saveInvoiceToFile();
-string getCurrentDate();
-void clearInvoice();
+int invoice_total_is();
+void send_invoice_to_file();
+string find_currunt_date();
+void clear_invoice();
 
 using namespace std;
 
 // The four screens of the program
-enum Screen { PORTAL, CATEGORIES, ITEMS, INVOICE };
+enum Screen
+{
+	PORTAL,
+	CATEGORIES,
+	ITEMS,
+	INVOICE
+};
 
 const unsigned int WINDOW_W = 1000;
 const unsigned int WINDOW_H = 750;
@@ -54,13 +58,13 @@ Button makeButton(float x, float y, float w, float h, string label)
 	return b;
 }
 
-bool isInside(const Button& b, sf::Vector2f p)
+bool isInside(const Button &b, sf::Vector2f p)
 {
 	return p.x >= b.x && p.x <= b.x + b.w &&
-		p.y >= b.y && p.y <= b.y + b.h;
+		   p.y >= b.y && p.y <= b.y + b.h;
 }
 
-void drawButton(sf::RenderWindow& window, const sf::Font& font,const Button& b, bool hovered, bool selected)
+void drawButton(sf::RenderWindow &window, const sf::Font &font, const Button &b, bool hovered, bool selected)
 {
 	sf::RectangleShape box(sf::Vector2f(b.w, b.h));
 	box.setPosition(sf::Vector2f(b.x, b.y));
@@ -75,13 +79,13 @@ void drawButton(sf::RenderWindow& window, const sf::Font& font,const Button& b, 
 	// center the text inside the button
 	sf::FloatRect bounds = text.getLocalBounds();
 	text.setOrigin(sf::Vector2f(bounds.position.x + bounds.size.x / 2.f,
-		bounds.position.y + bounds.size.y / 2.f));
+								bounds.position.y + bounds.size.y / 2.f));
 	text.setPosition(sf::Vector2f(b.x + b.w / 2.f, b.y + b.h / 2.f));
 	window.draw(text);
 }
 
-void drawText(sf::RenderWindow& window, const sf::Font& font, const string& str,
-	float x, float y, unsigned int size, bool centered = false)
+void drawText(sf::RenderWindow &window, const sf::Font &font, const string &str,
+			  float x, float y, unsigned int size, bool centered = false)
 {
 	sf::Text text(font, str, size);
 	text.setFillColor(sf::Color::Black);
@@ -106,45 +110,45 @@ int buildButtons(Screen screen, int category, Button buttons[])
 
 	if (screen == PORTAL)
 	{
-		buttons[n++] = makeButton(350, 300, 300, 70, "View Menu");        // 0
-		buttons[n++] = makeButton(350, 400, 300, 70, "Checkout / Exit");  // 1
+		buttons[n++] = makeButton(350, 300, 300, 70, "View Menu");		 // 0
+		buttons[n++] = makeButton(350, 400, 300, 70, "Checkout / Exit"); // 1
 	}
 	else if (screen == CATEGORIES)
 	{
-		for (int i = 0; i < NUM_CATEGORIES; i++)                           // 0 to 4
+		for (int i = 0; i < NUM_CATEGORIES; i++) // 0 to 4
 			buttons[n++] = makeButton(350, 120.f + i * 72.f, 300, 58, getCategoryName(i + 1));
 
-		buttons[n++] = makeButton(350, 500, 300, 58, "View Invoice");      // 5
-		buttons[n++] = makeButton(350, 570, 300, 58, "Back to Portal");    // 6
+		buttons[n++] = makeButton(350, 500, 300, 58, "View Invoice");	// 5
+		buttons[n++] = makeButton(350, 570, 300, 58, "Back to Portal"); // 6
 	}
 	else if (screen == ITEMS)
 	{
 		int count = getItemCount(category);
 
-		for (int i = 0; i < count; i++)                                    // 0 to count-1
+		for (int i = 0; i < count; i++) // 0 to count-1
 		{
 			string label = to_string(i + 1) + ". " + getItemName(category, i + 1) +
-				" - Rs " + to_string(getItemPrice(category, i + 1));
+						   " - Rs " + to_string(getItemPrice(category, i + 1));
 			buttons[n++] = makeButton(150, 100.f + i * 58.f, 700, 50, label);
 		}
 
-		buttons[n++] = makeButton(300, 500, 60, 50, "-");                  // count
-		buttons[n++] = makeButton(470, 500, 60, 50, "+");                  // count + 1
-		buttons[n++] = makeButton(600, 500, 250, 50, "Add to Order");      // count + 2
-		buttons[n++] = makeButton(150, 620, 300, 55, "Back");              // count + 3
-		buttons[n++] = makeButton(550, 620, 300, 55, "View Invoice");      // count + 4
+		buttons[n++] = makeButton(300, 500, 60, 50, "-");			  // count
+		buttons[n++] = makeButton(470, 500, 60, 50, "+");			  // count + 1
+		buttons[n++] = makeButton(600, 500, 250, 50, "Add to Order"); // count + 2
+		buttons[n++] = makeButton(150, 620, 300, 55, "Back");		  // count + 3
+		buttons[n++] = makeButton(550, 620, 300, 55, "View Invoice"); // count + 4
 	}
 	else if (screen == INVOICE)
 	{
-		buttons[n++] = makeButton(60, 670, 280, 55, "Back to Portal");     // 0
-		buttons[n++] = makeButton(360, 670, 280, 55, "New Order");         // 1
-		buttons[n++] = makeButton(660, 670, 280, 55, "Close");             // 2
+		buttons[n++] = makeButton(60, 670, 280, 55, "Back to Portal"); // 0
+		buttons[n++] = makeButton(360, 670, 280, 55, "New Order");	   // 1
+		buttons[n++] = makeButton(660, 670, 280, 55, "Close");		   // 2
 	}
 
 	return n;
 }
 
-//  MAIN GUI FUNCTION 
+//  MAIN GUI FUNCTION
 
 void runGUI()
 {
@@ -159,13 +163,13 @@ void runGUI()
 		}
 	}
 
-	sf::RenderWindow window(sf::VideoMode({ WINDOW_W, WINDOW_H }), "Brew & Bite Cafe");
+	sf::RenderWindow window(sf::VideoMode({WINDOW_W, WINDOW_H}), "Brew & Bite Cafe");
 	window.setFramerateLimit(60);
 
 	// Program state
 	Screen screen = PORTAL;
-	int category = 0;       // 1 to 5 once a category is opened
-	int selectedItem = 0;   // 0 = nothing selected
+	int category = 0;	  // 1 to 5 once a category is opened
+	int selectedItem = 0; // 0 = nothing selected
 	int qty = 1;
 	string message = "";
 
@@ -181,7 +185,7 @@ void runGUI()
 			{
 				window.close();
 			}
-			else if (const auto* click = event->getIf<sf::Event::MouseButtonPressed>())
+			else if (const auto *click = event->getIf<sf::Event::MouseButtonPressed>())
 			{
 				if (click->button == sf::Mouse::Button::Left)
 				{
@@ -235,17 +239,17 @@ void runGUI()
 								selectedItem = clicked + 1;
 								message = "";
 							}
-							else if (clicked == count)          // minus
+							else if (clicked == count) // minus
 							{
 								if (qty > 1)
 									qty--;
 							}
-							else if (clicked == count + 1)      // plus
+							else if (clicked == count + 1) // plus
 							{
 								if (qty < 99)
 									qty++;
 							}
-							else if (clicked == count + 2)      // add to order
+							else if (clicked == count + 2) // add to order
 							{
 								if (selectedItem == 0)
 								{
@@ -254,7 +258,7 @@ void runGUI()
 								else if (addItemToOrder(category, selectedItem, qty))
 								{
 									message = "Added " + to_string(qty) + " x " +
-										getItemName(category, selectedItem);
+											  getItemName(category, selectedItem);
 									qty = 1;
 								}
 								else
@@ -262,13 +266,13 @@ void runGUI()
 									message = "Could not add the item.";
 								}
 							}
-							else if (clicked == count + 3)      // back
+							else if (clicked == count + 3) // back
 							{
 								selectedItem = 0;
 								message = "";
 								screen = CATEGORIES;
 							}
-							else                                // view invoice
+							else // view invoice
 							{
 								screen = INVOICE;
 							}
@@ -281,14 +285,14 @@ void runGUI()
 							}
 							else if (clicked == 1)
 							{
-								saveInvoiceToFile();
-								clearInvoice();
+								send_invoice_to_file();
+								clear_invoice();
 								message = "";
 								screen = PORTAL;
 							}
 							else
 							{
-								saveInvoiceToFile();
+								send_invoice_to_file();
 								window.close();
 							}
 						}
@@ -312,7 +316,7 @@ void runGUI()
 		{
 			drawText(window, font, "BREW & BITE CAFE", 500, 90, 60, true);
 			drawText(window, font, "CUSTOMER PORTAL", 500, 190, 34, true);
-			drawText(window, font, "Date: " + getCurrentDate(), 500, 245, 28, true);
+			drawText(window, font, "Date: " + find_currunt_date(), 500, 245, 28, true);
 		}
 		else if (screen == CATEGORIES)
 		{
@@ -328,7 +332,7 @@ void runGUI()
 		else if (screen == INVOICE)
 		{
 			drawText(window, font, "INVOICE", 500, 20, 44, true);
-			drawText(window, font, "Date: " + getCurrentDate(), 700, 35, 24);
+			drawText(window, font, "Date: " + find_currunt_date(), 700, 35, 24);
 			int count = getInvoiceCount();
 
 			if (count == 0)
@@ -340,12 +344,12 @@ void runGUI()
 			{
 				float y = 85.f + i * 24.f;
 				drawText(window, font, getInvoiceName(i) + " x" + to_string(getInvoiceQty(i)),
-					150, y, 20);
+						 150, y, 20);
 				drawText(window, font, "Rs " + to_string(getInvoiceLineTotal(i)),
-					700, y, 20);
+						 700, y, 20);
 			}
 
-			drawText(window, font, "TOTAL: Rs " + to_string(getInvoiceTotal()), 500, 615, 32, true);
+			drawText(window, font, "TOTAL: Rs " + to_string(invoice_total_is()), 500, 615, 32, true);
 		}
 
 		// buttons are drawn last so they sit on top

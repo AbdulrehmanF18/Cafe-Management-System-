@@ -26,10 +26,7 @@ bool isAlreadyRegistered(const string &name, const string &email, const string &
         getline(ss, storedRole, ',');
         getline(ss, storedPassword, ',');
 
-        if (storedName == name &&
-            storedEmail == email &&
-            storedRole == role &&
-            storedPassword == password)
+        if (storedName == name && storedEmail == email && storedRole == role && storedPassword == password)
         {
             file.close();
             return true;

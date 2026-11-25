@@ -6,28 +6,19 @@
 #include <string>
 #include <optional>
 #include <ctime>
-#include <cstdio> // FIX 1: for sprintf
+#include <cstdio>
 
 using namespace std;
 using namespace sf;
 
+extern int current_day;
+extern int current_month;
+extern int current_year;
+string find_currunt_date();
 
-//  Pull these globals from your existing files
-//  - currentDay/Month/Year  : defined in #includeiostream.txt
-//  - productIDs/Names/...   : defined in Inventory.cpp
-
-extern int currentDay;
-extern int currentMonth;
-extern int currentYear;
-string getCurrentDate();
-
-extern int productCount;
-extern int productIDs[];      // FIX 4: size inferred from definition
-extern string productNames[]; // FIX 4: size inferred from definition
-
-
-//  Fixed-size arrays — same style as your inventory
-//  FIX 3: MAX_LINES reduced from 60 to 10 to keep Order small
+extern int product_counts;
+extern int product_ids[];
+extern string productNames[];
 
 const int MAX_ORDERS = 200;
 const int MAX_LINES = 10;
@@ -37,47 +28,42 @@ struct Order
     int day, month, year;
     int total;
     int lineCount;
-    string lineNames[MAX_LINES];
-    int lineQty[MAX_LINES];
-    int lineRevenue[MAX_LINES];
+    string line_names[MAX_LINES];
+    int line_qtt[MAX_LINES];
+    int line_revenue[MAX_LINES];
 };
 
-
-//  Helper: find product ID by name
-//  FIX 2: 'inline' added to prevent multiple-definition errors
-
-inline int findProductIDByName(const string &name)
+inline int find_product_id_by_name(const string &name)
 {
-    for (int i = 0; i < productCount; i++)
+    for (int i = 0; i < product_counts; i++)
         if (productNames[i] == name)
-            return productIDs[i];
+            return product_ids[i];
     return 0;
 }
 
-
-//  Parse sales.txt into a fixed array of Orders
-
-inline int loadAllOrders(Order orders[])
+inline int load_all_orders(Order orders[])
 {
-    int orderCount = 0;
+    int order_count = 0;
     ifstream in("sales.txt");
     if (!in)
+    {
         return 0;
+    }
 
     string line;
-    bool inOrder = false;
+    bool in_order = false;
     Order cur;
 
     while (getline(in, line))
     {
         if (line.rfind("Date: ", 0) == 0)
         {
-            if (inOrder && orderCount < MAX_ORDERS)
-                orders[orderCount++] = cur;
+            if (in_order && order_count < MAX_ORDERS)
+                orders[order_count++] = cur;
 
             cur = Order();
             cur.lineCount = 0;
-            inOrder = true;
+            in_order = true;
 
             string d = line.substr(6);
             int dd, mm, yy;
@@ -94,30 +80,30 @@ inline int loadAllOrders(Order orders[])
         }
         else if (line == "-----------------------")
         {
-            if (inOrder && orderCount < MAX_ORDERS)
-                orders[orderCount++] = cur;
-            inOrder = false;
+            if (in_order && order_count < MAX_ORDERS)
+                orders[order_count++] = cur;
+            in_order = false;
         }
-        else if (!line.empty() && inOrder)
+        else if (!line.empty() && in_order)
         {
             size_t x = line.rfind(" x");
             size_t eq = line.rfind(" = Rs ");
             if (x != string::npos && eq != string::npos && cur.lineCount < MAX_LINES)
             {
-                cur.lineNames[cur.lineCount] = line.substr(0, x);
-                cur.lineQty[cur.lineCount] = stoi(line.substr(x + 2, eq - x - 2));
-                cur.lineRevenue[cur.lineCount] = stoi(line.substr(eq + 6));
+                cur.line_names[cur.lineCount] = line.substr(0, x);
+                cur.line_qtt[cur.lineCount] = stoi(line.substr(x + 2, eq - x - 2));
+                cur.line_revenue[cur.lineCount] = stoi(line.substr(eq + 6));
                 cur.lineCount++;
             }
         }
     }
-    if (inOrder && orderCount < MAX_ORDERS)
-        orders[orderCount++] = cur;
+    if (in_order && order_count < MAX_ORDERS)
+        orders[order_count++] = cur;
 
-    return orderCount;
+    return order_count;
 }
 
-//  DAILY aggregation
+//  daily aggregation
 struct DailyReport
 {
     int orders;
@@ -131,7 +117,7 @@ struct DailyReport
     int itemRevenue[50];
 };
 
-inline DailyReport getDailyReport(int d, int m, int y)
+inline DailyReport get_daily_report(int d, int m, int y)
 {
     DailyReport r;
     r.orders = 0;
@@ -147,11 +133,10 @@ inline DailyReport getDailyReport(int d, int m, int y)
         r.itemRevenue[i] = 0;
     }
 
-    // FIX 3 (continued): 'static' moves the array off the stack
     static Order orders[MAX_ORDERS];
-    int orderCount = loadAllOrders(orders);
+    int order_count = load_all_orders(orders);
 
-    for (int i = 0; i < orderCount; i++)
+    for (int i = 0; i < order_count; i++)
     {
         if (orders[i].day != d || orders[i].month != m || orders[i].year != y)
             continue;
@@ -161,7 +146,7 @@ inline DailyReport getDailyReport(int d, int m, int y)
 
         for (int j = 0; j < orders[i].lineCount; j++)
         {
-            int pid = findProductIDByName(orders[i].lineNames[j]);
+            int pid = find_product_id_by_name(orders[i].line_names[j]);
 
             int slot = -1;
             for (int k = 0; k < r.itemCount; k++)
@@ -183,14 +168,14 @@ inline DailyReport getDailyReport(int d, int m, int y)
 
             if (slot != -1)
             {
-                r.itemQty[slot] += orders[i].lineQty[j];
-                r.itemRevenue[slot] += orders[i].lineRevenue[j];
+                r.itemQty[slot] += orders[i].line_qtt[j];
+                r.itemRevenue[slot] += orders[i].line_revenue[j];
 
                 if (r.itemQty[slot] > r.bestQty)
                 {
                     r.bestQty = r.itemQty[slot];
                     r.bestID = pid;
-                    r.bestName = orders[i].lineNames[j];
+                    r.bestName = orders[i].line_names[j];
                 }
             }
         }
@@ -200,7 +185,7 @@ inline DailyReport getDailyReport(int d, int m, int y)
 }
 
 //  WEEKLY aggregation
-struct WeeklyReport
+struct weekly_reportts
 {
     int ordersPerDay[7];
     int revenuePerDay[7];
@@ -213,9 +198,9 @@ struct WeeklyReport
     int itemQty[50];
 };
 
-inline WeeklyReport getWeeklyReport(int endD, int endM, int endY)
+inline weekly_reportts get_weekly_reports(int endD, int endM, int endY)
 {
-    WeeklyReport r;
+    weekly_reportts r;
     for (int i = 0; i < 7; i++)
     {
         r.ordersPerDay[i] = 0;
@@ -232,7 +217,6 @@ inline WeeklyReport getWeeklyReport(int endD, int endM, int endY)
         r.itemQty[i] = 0;
     }
 
-    // build 7 day keys (YYYY-MM-DD strings) for matching
     string keys[7];
     tm base = {};
     base.tm_mday = endD;
@@ -249,20 +233,19 @@ inline WeeklyReport getWeeklyReport(int endD, int endM, int endY)
         keys[i] = string(buf);
     }
 
-    // FIX 3 (continued): 'static' moves the array off the stack
     static Order orders[MAX_ORDERS];
-    int orderCount = loadAllOrders(orders);
+    int order_count = load_all_orders(orders);
 
-    for (int i = 0; i < orderCount; i++)
+    for (int i = 0; i < order_count; i++)
     {
         char key[16];
-        sprintf(key, "%04d-%02d-%02d",
+        sprintf(key, "%04d-%02d-%02d", // yyyy-mm-dd
                 orders[i].year, orders[i].month, orders[i].day);
-        string orderKey = key;
+        string order_key = key;
 
         for (int d = 0; d < 7; d++)
         {
-            if (keys[d] == orderKey)
+            if (keys[d] == order_key)
             {
                 r.ordersPerDay[d] += 1;
                 r.revenuePerDay[d] += orders[i].total;
@@ -271,7 +254,7 @@ inline WeeklyReport getWeeklyReport(int endD, int endM, int endY)
 
                 for (int j = 0; j < orders[i].lineCount; j++)
                 {
-                    int pid = findProductIDByName(orders[i].lineNames[j]);
+                    int pid = find_product_id_by_name(orders[i].line_names[j]);
 
                     int slot = -1;
                     for (int k = 0; k < r.itemCount; k++)
@@ -289,15 +272,14 @@ inline WeeklyReport getWeeklyReport(int endD, int endM, int endY)
                     }
 
                     if (slot != -1)
-                        r.itemQty[slot] += orders[i].lineQty[j];
+                        r.itemQty[slot] += orders[i].line_qtt[j];
                 }
                 break;
             }
         }
     }
 
-    // find top ID
-    for (int i = 0; i < r.itemCount; i++)
+    for (int i = 0; i < r.itemCount; i++) // top selling
         if (r.itemQty[i] > r.topQty)
         {
             r.topQty = r.itemQty[i];
@@ -307,21 +289,15 @@ inline WeeklyReport getWeeklyReport(int endD, int endM, int endY)
     return r;
 }
 
-
-//  Name lookup by ID for display
-
-inline string productNameByID(int id)
+inline string product_name_by_id(int id)
 {
-    for (int i = 0; i < productCount; i++)
-        if (productIDs[i] == id)
+    for (int i = 0; i < product_counts; i++)
+        if (product_ids[i] == id)
             return productNames[i];
     return "(unknown)";
 }
 
-
-//  Draw the whole Reports page
-
-inline int openReportsPage()
+inline int openReportsPage() // gui of reports
 {
     RenderWindow window(VideoMode({950, 700}), "Cafe Management System - Reports");
     window.setFramerateLimit(60);
@@ -331,9 +307,9 @@ inline int openReportsPage()
     const string buttons[2] = {"Daily Report", "Weekly Report"};
     int activeReport = 0;
 
-    DailyReport daily = getDailyReport(currentDay, currentMonth, currentYear);
-    WeeklyReport weekly = getWeeklyReport(currentDay, currentMonth, currentYear);
-    string dateStr = getCurrentDate();
+    DailyReport daily = get_daily_report(current_day, current_month, current_year);
+    weekly_reportts weekly = get_weekly_reports(current_day, current_month, current_year);
+    string dateStr = find_currunt_date();
 
     while (window.isOpen())
     {
@@ -364,7 +340,6 @@ inline int openReportsPage()
 
         window.clear(Color(245, 247, 250));
 
-        // ---------- top buttons ----------
         for (int i = 0; i < 2; i++)
         {
             RectangleShape btnBox({240.f, 45.f});
@@ -380,7 +355,6 @@ inline int openReportsPage()
             window.draw(btnText);
         }
 
-        // ---------- report panel ----------
         RectangleShape reportBox({840.f, 560.f});
         reportBox.setPosition({50.f, 100.f});
         reportBox.setFillColor(Color::White);
@@ -395,7 +369,6 @@ inline int openReportsPage()
 
         if (activeReport == 0)
         {
-            // DAILY 
             Text title(font, "Daily Summary Report", 20);
             title.setFillColor(Color(41, 128, 185));
             title.setPosition({70.f, 140.f});
@@ -423,7 +396,6 @@ inline int openReportsPage()
             r3.setPosition({70.f, 255.f});
             window.draw(r3);
 
-            // header row
             Text h1(font, "ID", 15);
             h1.setFillColor(Color(52, 73, 94));
             h1.setPosition({70.f, 320.f});
@@ -460,7 +432,7 @@ inline int openReportsPage()
                 idT.setPosition({75.f, y});
                 window.draw(idT);
 
-                Text nmT(font, productNameByID(daily.itemIDs[i]), 15);
+                Text nmT(font, product_name_by_id(daily.itemIDs[i]), 15);
                 nmT.setFillColor(Color::Black);
                 nmT.setPosition({170.f, y});
                 window.draw(nmT);
@@ -488,7 +460,6 @@ inline int openReportsPage()
         }
         else
         {
-            //  WEEKLY 
             Text title(font, "Weekly Performance (Last 7 Days)", 20);
             title.setFillColor(Color(41, 128, 185));
             title.setPosition({70.f, 140.f});
@@ -549,7 +520,7 @@ inline int openReportsPage()
                 bestLine += "(no sales)";
             else
                 bestLine += to_string(weekly.topID) + "  " +
-                            productNameByID(weekly.topID) +
+                            product_name_by_id(weekly.topID) +
                             "  (" + to_string(weekly.topQty) + " sold)";
 
             Text bestT(font, bestLine, 16);

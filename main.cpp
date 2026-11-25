@@ -7,7 +7,7 @@
 
 int main()
 {
-    loadDate();
+    load_date();
 
     while (true)
     {

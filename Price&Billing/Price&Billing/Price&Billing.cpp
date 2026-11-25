@@ -1,13 +1,13 @@
 #pragma once
-#include<iostream>
-#include<string>
-#include<fstream>
-#include<ctime>
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <ctime>
 #include "GUI_forsales.h"
 
 using namespace std;
 
-//FUNCTION PROTOTYPES 
+// FUNCTION PROTOTYPES
 int displayBurgers();
 int displaySandwiches();
 int displaySides();
@@ -17,20 +17,20 @@ int displayDesserts();
 void displayMenu();
 void customerPortal();
 
-bool addToInvoice(string name, int price, int qty);
+bool add_this_to_invoice(string name, int price, int qty);
 void takeOrder(int category, int pick);
 void printInvoice();
 void SalesSection();
 
-//FUNCTION PROTOTYPES for date data .
+// FUNCTION PROTOTYPES for date data .
 
-void loadDate();
+void load_date();
 void saveDate();
-string getCurrentDate();
-void saveInvoiceToFile();
+string find_currunt_date();
+void send_invoice_to_file();
 void viewSalesHistory();
 
-//FUNCTION PROTOTYPES ( also declared in GUI_forsales.h)
+// FUNCTION PROTOTYPES ( also declared in GUI_forsales.h)
 string getCategoryName(int category);
 int getItemCount(int category);
 string getItemName(int category, int pick);
@@ -40,117 +40,104 @@ int getInvoiceCount();
 string getInvoiceName(int index);
 int getInvoiceQty(int index);
 int getInvoiceLineTotal(int index);
-int getInvoiceTotal();
-void clearInvoice();
+int invoice_total_is();
+void clear_invoice();
 
-//Global Variables for storing menu items and their prices
+// Global Variables for storing menu items and their prices
 
 const int MAX_ITEMS = 50;
-int currentDay = 1;
-int currentMonth = 1;
-int currentYear = 2026;
+int current_day = 1;
+int current_month = 1;
+int current_year = 2026;
 
 // invoice data (1D arrays)
-string invNames[MAX_ITEMS];
-int invPrices[MAX_ITEMS];
-int invQty[MAX_ITEMS];
-int invCount = 0;
+string inventory_name[MAX_ITEMS];
+int inventory_price[MAX_ITEMS];
+int inventory_qut[MAX_ITEMS];
+int inventory_count = 0;
 
-
-//CATEGORY NAMES
+// CATEGORY NAMES
 
 string categoryNames[NUM_CATEGORIES] = {
 	"Burgers",
 	"Sandwiches and Wraps",
 	"Sides",
 	"Drinks",
-	"Desserts"
-};
+	"Desserts"};
 
-
-//BURGERS DATA
+// BURGERS DATA
 
 string burgers[5] = {
-		"Classic Cheeseburger",
-		"Spicy Zinger Burger",
-		"Black Beast Burger",
-		"Smoky BBQ Burger",
-		"Double Trouble Burger"
-};
+	"Classic Cheeseburger",
+	"Spicy Zinger Burger",
+	"Black Beast Burger",
+	"Smoky BBQ Burger",
+	"Double Trouble Burger"};
 
 int burgerPrices[5] = {
 	500, // Classic Cheeseburger
 	600, // Spicy Zinger Burger
 	700, // Black Beast Burger
 	650, // Smoky BBQ Burger
-	800  // Double Trouble Burger
+	800	 // Double Trouble Burger
 };
 
-
-//SANDWICHES DATA
+// SANDWICHES DATA
 
 string sandwiches[3] = {
-		"Grilled Chicken Sandwich",
-		"Crispy Chicken Wrap",
-		"Beef Fajita Wrap"
-};
+	"Grilled Chicken Sandwich",
+	"Crispy Chicken Wrap",
+	"Beef Fajita Wrap"};
 int sandwichPrices[3] = {
 	550, // Grilled Chicken Sandwich
 	500, // Crispy Chicken Wrap
-	650  // Beef Fajita Wrap
+	650	 // Beef Fajita Wrap
 };
 
-//SIDES DATA
+// SIDES DATA
 
 string sides[4] = {
-		"Classic Fries",
-		"Loaded Fries",
-		"Chicken Nuggets",
-		"Onion Rings"
-};
+	"Classic Fries",
+	"Loaded Fries",
+	"Chicken Nuggets",
+	"Onion Rings"};
 int sidePrices[4] = {
 	250, // Classic Fries
 	400, // Loaded Fries
 	350, // Chicken Nuggets
-	300  // Onion Rings
+	300	 // Onion Rings
 };
 
-//DRINKS DATA
+// DRINKS DATA
 
 string drinks[6] = {
-		"Blue Lagoon Crusher",
-		"Strawberry Crusher",
-		"Mango Crusher",
-		"Chocolate Milkshake",
-		"Oreo Milkshake",
-		"Soft Drinks"
-};
+	"Blue Lagoon Crusher",
+	"Strawberry Crusher",
+	"Mango Crusher",
+	"Chocolate Milkshake",
+	"Oreo Milkshake",
+	"Soft Drinks"};
 int drinkPrices[6] = {
 	300, // Blue Lagoon Crusher
 	300, // Strawberry Crusher
 	300, // Mango Crusher
 	400, // Chocolate Milkshake
 	450, // Oreo Milkshake
-	150  // Soft Drinks
+	150	 // Soft Drinks
 };
 
-//DESSERTS DATA
+// DESSERTS DATA
 
 string desserts[3] = {
 	"Chocolate Brownie",
 	"Molten Lava Cake",
-	"Ice Cream"
-};
-
+	"Ice Cream"};
 
 int dessertPrices[3] = {
 	300, // Chocolate Brownie
 	400, // Molten Lava Cake
-	200  // Ice Cream
+	200	 // Ice Cream
 };
-
-
-
 
 //  FUNCTIONS USED BY THE GUIs
 
@@ -166,12 +153,18 @@ int getItemCount(int category)
 {
 	switch (category)
 	{
-	case 1: return 5;
-	case 2: return 3;
-	case 3: return 4;
-	case 4: return 6;
-	case 5: return 3;
-	default: return 0;
+	case 1:
+		return 5;
+	case 2:
+		return 3;
+	case 3:
+		return 4;
+	case 4:
+		return 6;
+	case 5:
+		return 3;
+	default:
+		return 0;
 	}
 }
 
@@ -182,12 +175,18 @@ string getItemName(int category, int pick)
 
 	switch (category)
 	{
-	case 1: return burgers[pick - 1];
-	case 2: return sandwiches[pick - 1];
-	case 3: return sides[pick - 1];
-	case 4: return drinks[pick - 1];
-	case 5: return desserts[pick - 1];
-	default: return "";
+	case 1:
+		return burgers[pick - 1];
+	case 2:
+		return sandwiches[pick - 1];
+	case 3:
+		return sides[pick - 1];
+	case 4:
+		return drinks[pick - 1];
+	case 5:
+		return desserts[pick - 1];
+	default:
+		return "";
 	}
 }
 
@@ -198,12 +197,18 @@ int getItemPrice(int category, int pick)
 
 	switch (category)
 	{
-	case 1: return burgerPrices[pick - 1];
-	case 2: return sandwichPrices[pick - 1];
-	case 3: return sidePrices[pick - 1];
-	case 4: return drinkPrices[pick - 1];
-	case 5: return dessertPrices[pick - 1];
-	default: return 0;
+	case 1:
+		return burgerPrices[pick - 1];
+	case 2:
+		return sandwichPrices[pick - 1];
+	case 3:
+		return sidePrices[pick - 1];
+	case 4:
+		return drinkPrices[pick - 1];
+	case 5:
+		return dessertPrices[pick - 1];
+	default:
+		return 0;
 	}
 }
 
@@ -216,50 +221,47 @@ bool addItemToOrder(int category, int pick, int qty)
 	if (pick < 1 || pick > getItemCount(category))
 		return false;
 
-	return addToInvoice(getItemName(category, pick), getItemPrice(category, pick), qty);
+	return add_this_to_invoice(getItemName(category, pick), getItemPrice(category, pick), qty);
 }
 
 int getInvoiceCount()
 {
-	return invCount;
+	return inventory_count;
 }
 
 string getInvoiceName(int index)
 {
-	if (index < 0 || index >= invCount)
+	if (index < 0 || index >= inventory_count)
 		return "";
-	return invNames[index];
+	return inventory_name[index];
 }
 
 int getInvoiceQty(int index)
 {
-	if (index < 0 || index >= invCount)
+	if (index < 0 || index >= inventory_count)
 		return 0;
-	return invQty[index];
+	return inventory_qut[index];
 }
 
 int getInvoiceLineTotal(int index)
 {
-	if (index < 0 || index >= invCount)
+	if (index < 0 || index >= inventory_count)
 		return 0;
-	return invPrices[index] * invQty[index];
+	return inventory_price[index] * inventory_qut[index];
 }
 
-int getInvoiceTotal()
+int invoice_total_is()
 {
 	int total = 0;
-	for (int i = 0; i < invCount; i++)
-		total += invPrices[i] * invQty[i];
+	for (int i = 0; i < inventory_count; i++)
+		total += inventory_price[i] * inventory_qut[i];
 	return total;
 }
 
-void clearInvoice()
+void clear_invoice()
 {
-	invCount = 0;
+	inventory_count = 0;
 }
-
-
-
 
 int displayBurgers()
 {
@@ -271,12 +273,14 @@ int displayBurgers()
 	int choice = 0;
 	cout << "Select burger: ";
 	cin >> choice;
-	return choice;       // 0 = back, 1-5 = burger number
+	return choice; // 0 = back, 1-5 = burger number
 }
 
 int displaySandwiches()
 {
-	cout << endl << "\n----- SANDWICHES AND WRAPS -----\n" << endl;
+	cout << endl
+		 << "\n----- SANDWICHES AND WRAPS -----\n"
+		 << endl;
 	for (int i = 0; i < 3; i++)
 		cout << i + 1 << ". " << sandwiches[i] << " - Rs " << sandwichPrices[i] << endl;
 	cout << "0. Back\n";
@@ -284,13 +288,14 @@ int displaySandwiches()
 	int choice = 0;
 	cout << "Select sandwich: ";
 	cin >> choice;
-	return choice;          // 0 = back, 1-3 = sandwich number
-
+	return choice; // 0 = back, 1-3 = sandwich number
 }
 
 int displaySides()
 {
-	cout << endl << "\n----- SIDES -----\n" << endl;
+	cout << endl
+		 << "\n----- SIDES -----\n"
+		 << endl;
 
 	for (int i = 0; i < 4; i++)
 	{
@@ -301,14 +306,14 @@ int displaySides()
 	int choice = 0;
 	cout << "Select side: ";
 	cin >> choice;
-	return choice;          // 0 = back, 1-4= side number
-
+	return choice; // 0 = back, 1-4= side number
 }
 
-int  displayDrinks()
+int displayDrinks()
 {
-	cout << endl << "\n----- DRINKS -----\n" << endl;
-
+	cout << endl
+		 << "\n----- DRINKS -----\n"
+		 << endl;
 
 	for (int i = 0; i < 6; i++)
 	{
@@ -319,13 +324,14 @@ int  displayDrinks()
 	int choice = 0;
 	cout << "Select drink: ";
 	cin >> choice;
-	return choice;          // 0 = back, 1-6 = drink number
-
+	return choice; // 0 = back, 1-6 = drink number
 }
 
 int displayDesserts()
 {
-	cout << endl << "\n----- DESSERTS -----\n" << endl;
+	cout << endl
+		 << "\n----- DESSERTS -----\n"
+		 << endl;
 
 	for (int i = 0; i < 3; i++)
 	{
@@ -333,13 +339,11 @@ int displayDesserts()
 	}
 	cout << "0. Back\n";
 
-
 	int choice = 0;
 	cout << "Select dessert: ";
 	cin >> choice;
-	return choice;          // 0 = back, 1-3 = dessert number
+	return choice; // 0 = back, 1-3 = dessert number
 }
-
 
 void displayMenu()
 {
@@ -347,7 +351,8 @@ void displayMenu()
 
 	do
 	{
-		cout << endl << "========== BREW & BITE CAFE ==========" << endl;
+		cout << endl
+			 << "========== BREW & BITE CAFE ==========" << endl;
 		cout << "1. Burgers" << endl;
 		cout << "2. Sandwiches and Wraps" << endl;
 		cout << "3. Sides" << endl;
@@ -377,7 +382,7 @@ void displayMenu()
 			pick = displayDesserts();
 			break;
 		case 6:
-			break;                      // loop ends because choice == 6
+			break; // loop ends because choice == 6
 		default:
 			cout << "invalid choice" << endl;
 		}
@@ -389,14 +394,14 @@ void displayMenu()
 	} while (choice != 6);
 }
 
-
 void customerPortal()
 {
 	int choice;
 
 	do
 	{
-		cout << endl << "========== CUSTOMER PORTAL ==========" << endl;
+		cout << endl
+			 << "========== CUSTOMER PORTAL ==========" << endl;
 		cout << "1. View Menu" << endl;
 		cout << "2. Exit" << endl;
 		cout << "Enter your choice: ";
@@ -405,12 +410,10 @@ void customerPortal()
 		if (choice == 1)
 		{
 			displayMenu();
-
 		}
 		else if (choice == 2)
 		{
 			cout << "thankyou for your visit we hope to serve you again" << endl;
-
 		}
 		else
 		{
@@ -420,30 +423,28 @@ void customerPortal()
 	} while (choice != 2);
 }
 
-
 // adds an item to the invoice; if the same item is already there, its quantity is increased
 // returns false if the invoice is full
-bool addToInvoice(string name, int price, int qty)
+bool add_this_to_invoice(string name, int price, int qty)
 {
-	for (int i = 0; i < invCount; i++)
+	for (int i = 0; i < inventory_count; i++)
 	{
-		if (invNames[i] == name)
+		if (inventory_name[i] == name)
 		{
-			invQty[i] += qty;
+			inventory_qut[i] += qty;
 			return true;
 		}
 	}
 
-	if (invCount >= MAX_ITEMS)
+	if (inventory_count >= MAX_ITEMS)
 		return false;
 
-	invNames[invCount] = name;
-	invPrices[invCount] = price;
-	invQty[invCount] = qty;
-	invCount++;
+	inventory_name[inventory_count] = name;
+	inventory_price[inventory_count] = price;
+	inventory_qut[inventory_count] = qty;
+	inventory_count++;
 	return true;
 }
-
 
 void takeOrder(int category, int pick)
 {
@@ -461,43 +462,38 @@ void takeOrder(int category, int pick)
 		cout << "Invalid item selected or invoice is full." << endl;
 }
 
-
-
 void printInvoice()
 {
 	int total = 0;
 	cout << "\n===== INVOICE =====\n";
-	for (int i = 0; i < invCount; i++)
+	for (int i = 0; i < inventory_count; i++)
 	{
-		int lineTotal = invPrices[i] * invQty[i];
-		cout << invNames[i] << " x" << invQty[i] << " = Rs " << lineTotal << endl;
+		int lineTotal = inventory_price[i] * inventory_qut[i];
+		cout << inventory_name[i] << " x" << inventory_qut[i] << " = Rs " << lineTotal << endl;
 		total += lineTotal;
 	}
 	cout << "TOTAL: Rs " << total << endl;
 }
 
-
-
-
 // Sets the date.
-void loadDate()
+void load_date()
 {
 	ifstream inFile("date.txt");
 
-	if (inFile >> currentDay >> currentMonth >> currentYear)
+	if (inFile >> current_day >> current_month >> current_year)
 	{
 		inFile.close();
 
 		tm t = {};
-		t.tm_mday = currentDay + 1;
-		t.tm_mon = currentMonth - 1;
-		t.tm_year = currentYear - 1900;
+		t.tm_mday = current_day + 1;
+		t.tm_mon = current_month - 1;
+		t.tm_year = current_year - 1900;
 		t.tm_hour = 12;
 		mktime(&t);
 
-		currentDay = t.tm_mday;
-		currentMonth = t.tm_mon + 1;
-		currentYear = t.tm_year + 1900;
+		current_day = t.tm_mday;
+		current_month = t.tm_mon + 1;
+		current_year = t.tm_year + 1900;
 	}
 	else
 	{
@@ -505,9 +501,9 @@ void loadDate()
 		tm t;
 		localtime_s(&t, &now);
 
-		currentDay = t.tm_mday;
-		currentMonth = t.tm_mon + 1;
-		currentYear = t.tm_year + 1900;
+		current_day = t.tm_mday;
+		current_month = t.tm_mon + 1;
+		current_year = t.tm_year + 1900;
 	}
 
 	saveDate();
@@ -516,37 +512,39 @@ void loadDate()
 void saveDate()
 {
 	ofstream outFile("date.txt");
-	outFile << currentDay << " " << currentMonth << " " << currentYear;
+	outFile << current_day << " " << current_month << " " << current_year;
 	outFile.close();
 }
 
 // returns the date.
-string getCurrentDate()
+string find_currunt_date()
 {
-	string d = to_string(currentDay);
-	string m = to_string(currentMonth);
-	if (currentDay < 10)   d = "0" + d;
-	if (currentMonth < 10) m = "0" + m;
-	return d + "-" + m + "-" + to_string(currentYear);
+	string d = to_string(current_day);
+	string m = to_string(current_month);
+	if (current_day < 10)
+		d = "0" + d;
+	if (current_month < 10)
+		m = "0" + m;
+	return d + "-" + m + "-" + to_string(current_year);
 }
 
 // adds the current invoice to the end of sales.txt
-void saveInvoiceToFile()
+void send_invoice_to_file()
 {
-	if (invCount == 0)
+	if (inventory_count == 0)
 		return;
 
-	ofstream outFile("sales.txt", ios::app);   // app = append, keeps old data
+	ofstream outFile("sales.txt", ios::app); // app = append, keeps old data
 	if (!outFile)
 	{
 		cout << "Could not open sales file." << endl;
 		return;
 	}
 
-	outFile << "Date: " << getCurrentDate() << endl;
-	for (int i = 0; i < invCount; i++)
-		outFile << invNames[i] << " x" << invQty[i] << " = Rs " << invPrices[i] * invQty[i] << endl;
-	outFile << "TOTAL: Rs " << getInvoiceTotal() << endl;
+	outFile << "Date: " << find_currunt_date() << endl;
+	for (int i = 0; i < inventory_count; i++)
+		outFile << inventory_name[i] << " x" << inventory_qut[i] << " = Rs " << inventory_price[i] * inventory_qut[i] << endl;
+	outFile << "TOTAL: Rs " << invoice_total_is() << endl;
 	outFile << "-----------------------" << endl;
 
 	outFile.close();
@@ -569,14 +567,10 @@ void viewSalesHistory()
 	inFile.close();
 }
 
-
-
-
-
 void SalesSection()
 {
 	const bool USE_GUI = true;
-	loadDate();
+	load_date();
 	if (USE_GUI)
 	{
 		runGUI();

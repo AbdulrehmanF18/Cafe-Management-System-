@@ -64,7 +64,7 @@ int openInventoryPage()
                 {
                     selectedIndex = -1;
 
-                    for (int i = 0; i < productCount; i++)
+                    for (int i = 0; i < product_counts; i++)
                     {
                         float y = 155.f + i * 40.f;
 
@@ -136,7 +136,7 @@ int openInventoryPage()
         statusHeader.setPosition({820.f, 112.f});
         window.draw(statusHeader);
 
-        for (int i = 0; i < productCount && i < 13; i++)
+        for (int i = 0; i < product_counts && i < 13; i++)
         {
             float y = 155.f + i * 40.f;
             RectangleShape row({890.f, 38.f});
@@ -146,7 +146,7 @@ int openInventoryPage()
                                  : (i % 2 == 0 ? Color::White : Color(236, 240, 241)));
             window.draw(row);
 
-            Text idText(font, to_string(productIDs[i]), 15);
+            Text idText(font, to_string(product_ids[i]), 15);
             idText.setFillColor(Color::Black);
             idText.setPosition({45.f, y + 8.f});
             window.draw(idText);
@@ -172,7 +172,7 @@ int openInventoryPage()
             window.draw(statusText);
         }
 
-        if (productCount == 0)
+        if (product_counts == 0)
         {
             Text emptyText(font, "No products found", 20);
             emptyText.setFillColor(Color(127, 140, 141));

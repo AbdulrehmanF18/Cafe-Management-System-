@@ -214,7 +214,7 @@ int openSignInScreen()
             }
         }
 
-        // Blink and move cursor in the active text field
+        // blink and move cursor in the active text field
         if (input_fields != 0)
         {
             if (blinkClock.getElapsedTime().asSeconds() >= blinkInterval)
