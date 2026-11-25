@@ -3,7 +3,7 @@
 #include "3rd_page_project.cpp"
 #include "shared_data.cpp"
 #include "reports.cpp"
-// #include "Price&Billing.cpp"
+#include "Price&Billing.cpp"
 
 int main()
 {
@@ -43,7 +43,7 @@ int main()
             }
             else if (dashboardResult == 2)
             {
-                //  SalesSection();
+                SalesSection();
             }
 
             break;
