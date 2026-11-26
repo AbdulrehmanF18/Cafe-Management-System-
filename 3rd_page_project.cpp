@@ -14,7 +14,7 @@ int openThirdScreen()
     Font font("Arial.ttf");
 
     // Cafe theme colors
-    Color creamBackground(246, 241, 233);
+    Color creamBackground(211, 211, 211);
     Color espressoBorder(58, 38, 24);
     Color latteCard(255, 252, 247);
     Color mochaAccent(111, 78, 55);

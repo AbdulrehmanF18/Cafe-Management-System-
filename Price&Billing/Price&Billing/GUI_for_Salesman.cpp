@@ -37,7 +37,7 @@ enum Screen
 
 const unsigned int WINDOW_W = 1000;
 const unsigned int WINDOW_H = 750;
-const int MAX_BUTTONS = 16;
+const int MAX_BUTTONS = 24; 
 
 // ================= BUTTON HELPERS =================
 
@@ -75,6 +75,10 @@ void drawButton(sf::RenderWindow &window, const sf::Font &font, const Button &b,
 
 	sf::Text text(font, b.label, 24);
 	text.setFillColor(sf::Color::Black);
+
+	
+	while (text.getCharacterSize() > 12 && text.getLocalBounds().size.x > b.w - 16.f)
+		text.setCharacterSize(text.getCharacterSize() - 1);
 
 	// center the text inside the button
 	sf::FloatRect bounds = text.getLocalBounds();
@@ -129,7 +133,11 @@ int buildButtons(Screen screen, int category, Button buttons[])
 		{
 			string label = to_string(i + 1) + ". " + getItemName(category, i + 1) +
 						   " - Rs " + to_string(getItemPrice(category, i + 1));
-			buttons[n++] = makeButton(150, 100.f + i * 58.f, 700, 50, label);
+
+			if (count <= 7) 
+				buttons[n++] = makeButton(150, 100.f + i * 56.f, 700, 48, label);
+			else 
+				buttons[n++] = makeButton(i < 7 ? 60.f : 505.f, 100.f + (i % 7) * 56.f, 435, 48, label);
 		}
 
 		buttons[n++] = makeButton(300, 500, 60, 50, "-");			  // count
@@ -308,7 +316,7 @@ void runGUI()
 			break;
 
 		//  DRAWING
-		window.clear(sf::Color::Cyan);
+		window.clear(sf::Color(211, 211, 211)); 
 
 		sf::Vector2f mouse(sf::Mouse::getPosition(window));
 
@@ -325,6 +333,8 @@ void runGUI()
 		else if (screen == ITEMS)
 		{
 			drawText(window, font, getCategoryName(category), 500, 25, 44, true);
+			if (getItemCount(category) == 0)
+				drawText(window, font, "No items available in this category.", 500, 250, 28, true);
 			drawText(window, font, "Quantity:", 150, 505, 28);
 			drawText(window, font, to_string(qty), 415, 503, 32, true);
 			drawText(window, font, message, 500, 565, 24, true);

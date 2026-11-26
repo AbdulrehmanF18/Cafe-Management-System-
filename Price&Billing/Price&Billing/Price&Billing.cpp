@@ -8,12 +8,7 @@
 using namespace std;
 
 // FUNCTION PROTOTYPES
-int displayBurgers();
-int displaySandwiches();
-int displaySides();
-int displayDrinks();
-int displayDesserts();
-
+int displayCategoryItems(int category);
 void displayMenu();
 void customerPortal();
 
@@ -43,129 +38,56 @@ int getInvoiceLineTotal(int index);
 int invoice_total_is();
 void clear_invoice();
 
-// Global Variables for storing menu items and their prices
+// These are defined once in shared_data.cpp (and getCategoryName in Inventory.cpp)
+extern int current_day;
+extern int current_month;
+extern int current_year;
+extern string inventory_name[];
+extern int inventory_price[];
+extern int inventory_qut[];
+extern int inventory_count;
 
-const int MAX_ITEMS = 50;
-int current_day = 1;
-int current_month = 1;
-int current_year = 2026;
+// The menu comes from the product inventory (Inventory.cpp / inventory.txt),
+// so products added on the Product screen show up here, and
+// products marked "Unavailable" are hidden from the menu.
+extern int product_counts;
+extern string productNames[];
+extern int productPrices[];
+extern int productCategories[];
+extern bool productAvailable[];
+void loadInventory();
 
-// invoice data (1D arrays)
-string inventory_name[MAX_ITEMS];
-int inventory_price[MAX_ITEMS];
-int inventory_qut[MAX_ITEMS];
-int inventory_count = 0;
+// most items one category can show on the sales screen
+const int MAX_ITEMS_PER_CATEGORY = 14;
 
-// CATEGORY NAMES
-
-string categoryNames[NUM_CATEGORIES] = {
-	"Burgers",
-	"Sandwiches and Wraps",
-	"Sides",
-	"Drinks",
-	"Desserts"};
-
-// BURGERS DATA
-
-string burgers[5] = {
-	"Classic Cheeseburger",
-	"Spicy Zinger Burger",
-	"Black Beast Burger",
-	"Smoky BBQ Burger",
-	"Double Trouble Burger"};
-
-int burgerPrices[5] = {
-	500, // Classic Cheeseburger
-	600, // Spicy Zinger Burger
-	700, // Black Beast Burger
-	650, // Smoky BBQ Burger
-	800	 // Double Trouble Burger
-};
-
-// SANDWICHES DATA
-
-string sandwiches[3] = {
-	"Grilled Chicken Sandwich",
-	"Crispy Chicken Wrap",
-	"Beef Fajita Wrap"};
-int sandwichPrices[3] = {
-	550, // Grilled Chicken Sandwich
-	500, // Crispy Chicken Wrap
-	650	 // Beef Fajita Wrap
-};
-
-// SIDES DATA
-
-string sides[4] = {
-	"Classic Fries",
-	"Loaded Fries",
-	"Chicken Nuggets",
-	"Onion Rings"};
-int sidePrices[4] = {
-	250, // Classic Fries
-	400, // Loaded Fries
-	350, // Chicken Nuggets
-	300	 // Onion Rings
-};
-
-// DRINKS DATA
-
-string drinks[6] = {
-	"Blue Lagoon Crusher",
-	"Strawberry Crusher",
-	"Mango Crusher",
-	"Chocolate Milkshake",
-	"Oreo Milkshake",
-	"Soft Drinks"};
-int drinkPrices[6] = {
-	300, // Blue Lagoon Crusher
-	300, // Strawberry Crusher
-	300, // Mango Crusher
-	400, // Chocolate Milkshake
-	450, // Oreo Milkshake
-	150	 // Soft Drinks
-};
-
-// DESSERTS DATA
-
-string desserts[3] = {
-	"Chocolate Brownie",
-	"Molten Lava Cake",
-	"Ice Cream"};
-
-int dessertPrices[3] = {
-	300, // Chocolate Brownie
-	400, // Molten Lava Cake
-	200	 // Ice Cream
-};
+// returns the inventory index of the pick-th (1-based) available product in a category, or -1
+int findMenuProduct(int category, int pick)
+{
+	int found = 0;
+	for (int i = 0; i < product_counts; i++)
+	{
+		if (productCategories[i] == category && productAvailable[i])
+		{
+			found++;
+			if (found == pick)
+				return i;
+		}
+	}
+	return -1;
+}
 
 //  FUNCTIONS USED BY THE GUIs
 
-string getCategoryName(int category)
-{
-	if (category >= 1 && category <= NUM_CATEGORIES)
-
-		return categoryNames[category - 1];
-	return "";
-}
-
 int getItemCount(int category)
 {
-	switch (category)
-	{
-	case 1:
-		return 5;
-	case 2:
-		return 3;
-	case 3:
-		return 4;
-	case 4:
-		return 6;
-	case 5:
-		return 3;
-	default:
-		return 0;
-	}
+	int count = 0;
+	for (int i = 0; i < product_counts; i++)
+		if (productCategories[i] == category && productAvailable[i])
+			count++;
+
+	if (count > MAX_ITEMS_PER_CATEGORY)
+		count = MAX_ITEMS_PER_CATEGORY;
+	return count;
 }
 
 string getItemName(int category, int pick)
@@ -173,21 +95,8 @@ string getItemName(int category, int pick)
 	if (pick < 1 || pick > getItemCount(category))
 		return "";
 
-	switch (category)
-	{
-	case 1:
-		return burgers[pick - 1];
-	case 2:
-		return sandwiches[pick - 1];
-	case 3:
-		return sides[pick - 1];
-	case 4:
-		return drinks[pick - 1];
-	case 5:
-		return desserts[pick - 1];
-	default:
-		return "";
-	}
+	int index = findMenuProduct(category, pick);
+	return index == -1 ? "" : productNames[index];
 }
 
 int getItemPrice(int category, int pick)
@@ -195,21 +104,8 @@ int getItemPrice(int category, int pick)
 	if (pick < 1 || pick > getItemCount(category))
 		return 0;
 
-	switch (category)
-	{
-	case 1:
-		return burgerPrices[pick - 1];
-	case 2:
-		return sandwichPrices[pick - 1];
-	case 3:
-		return sidePrices[pick - 1];
-	case 4:
-		return drinkPrices[pick - 1];
-	case 5:
-		return dessertPrices[pick - 1];
-	default:
-		return 0;
-	}
+	int index = findMenuProduct(category, pick);
+	return index == -1 ? 0 : productPrices[index];
 }
 
 // checks the choice and adds the item to the invoice; returns true if it was added
@@ -250,99 +146,24 @@ int getInvoiceLineTotal(int index)
 	return inventory_price[index] * inventory_qut[index];
 }
 
-int invoice_total_is()
-{
-	int total = 0;
-	for (int i = 0; i < inventory_count; i++)
-		total += inventory_price[i] * inventory_qut[i];
-	return total;
-}
-
-void clear_invoice()
-{
-	inventory_count = 0;
-}
-
-int displayBurgers()
-{
-	cout << "\n--- BURGERS ---\n";
-	for (int i = 0; i < 5; i++)
-		cout << i + 1 << ". " << burgers[i] << " - Rs " << burgerPrices[i] << endl;
-	cout << "0. Back\n";
-
-	int choice = 0;
-	cout << "Select burger: ";
-	cin >> choice;
-	return choice; // 0 = back, 1-5 = burger number
-}
-
-int displaySandwiches()
+// console version: shows one category's items and returns the picked number (0 = back)
+int displayCategoryItems(int category)
 {
 	cout << endl
-		 << "\n----- SANDWICHES AND WRAPS -----\n"
-		 << endl;
-	for (int i = 0; i < 3; i++)
-		cout << i + 1 << ". " << sandwiches[i] << " - Rs " << sandwichPrices[i] << endl;
+		 << "----- " << getCategoryName(category) << " -----" << endl;
+
+	int count = getItemCount(category);
+	if (count == 0)
+		cout << "(no items available)" << endl;
+
+	for (int i = 1; i <= count; i++)
+		cout << i << ". " << getItemName(category, i) << " - Rs " << getItemPrice(category, i) << endl;
 	cout << "0. Back\n";
 
 	int choice = 0;
-	cout << "Select sandwich: ";
+	cout << "Select item: ";
 	cin >> choice;
-	return choice; // 0 = back, 1-3 = sandwich number
-}
-
-int displaySides()
-{
-	cout << endl
-		 << "\n----- SIDES -----\n"
-		 << endl;
-
-	for (int i = 0; i < 4; i++)
-	{
-		cout << i + 1 << ". " << sides[i] << " - Rs " << sidePrices[i] << endl;
-	}
-	cout << "0. Back\n";
-
-	int choice = 0;
-	cout << "Select side: ";
-	cin >> choice;
-	return choice; // 0 = back, 1-4= side number
-}
-
-int displayDrinks()
-{
-	cout << endl
-		 << "\n----- DRINKS -----\n"
-		 << endl;
-
-	for (int i = 0; i < 6; i++)
-	{
-		cout << i + 1 << ". " << drinks[i] << " - Rs " << drinkPrices[i] << endl;
-	}
-	cout << "0. Back\n";
-
-	int choice = 0;
-	cout << "Select drink: ";
-	cin >> choice;
-	return choice; // 0 = back, 1-6 = drink number
-}
-
-int displayDesserts()
-{
-	cout << endl
-		 << "\n----- DESSERTS -----\n"
-		 << endl;
-
-	for (int i = 0; i < 3; i++)
-	{
-		cout << i + 1 << ". " << desserts[i] << " - Rs " << dessertPrices[i] << endl;
-	}
-	cout << "0. Back\n";
-
-	int choice = 0;
-	cout << "Select dessert: ";
-	cin >> choice;
-	return choice; // 0 = back, 1-3 = dessert number
+	return choice;
 }
 
 void displayMenu()
@@ -353,42 +174,21 @@ void displayMenu()
 	{
 		cout << endl
 			 << "========== BREW & BITE CAFE ==========" << endl;
-		cout << "1. Burgers" << endl;
-		cout << "2. Sandwiches and Wraps" << endl;
-		cout << "3. Sides" << endl;
-		cout << "4. Drinks" << endl;
-		cout << "5. Desserts" << endl;
+		for (int c = 1; c <= NUM_CATEGORIES; c++)
+			cout << c << ". " << getCategoryName(c) << endl;
 		cout << "6. Back to Customer Portal" << endl;
 		cout << "Enter your choice: ";
 		cin >> choice;
 
 		int pick = 0;
 
-		switch (choice)
-		{
-		case 1:
-			pick = displayBurgers();
-			break;
-		case 2:
-			pick = displaySandwiches();
-			break;
-		case 3:
-			pick = displaySides();
-			break;
-		case 4:
-			pick = displayDrinks();
-			break;
-		case 5:
-			pick = displayDesserts();
-			break;
-		case 6:
-			break; // loop ends because choice == 6
-		default:
+		if (choice >= 1 && choice <= NUM_CATEGORIES)
+			pick = displayCategoryItems(choice);
+		else if (choice != 6)
 			cout << "invalid choice" << endl;
-		}
 
 		// a category was opened and the user didn't press 0 (Back)
-		if (choice >= 1 && choice <= 5 && pick != 0)
+		if (choice >= 1 && choice <= NUM_CATEGORIES && pick != 0)
 			takeOrder(choice, pick);
 
 	} while (choice != 6);
@@ -423,29 +223,6 @@ void customerPortal()
 	} while (choice != 2);
 }
 
-// adds an item to the invoice; if the same item is already there, its quantity is increased
-// returns false if the invoice is full
-bool add_this_to_invoice(string name, int price, int qty)
-{
-	for (int i = 0; i < inventory_count; i++)
-	{
-		if (inventory_name[i] == name)
-		{
-			inventory_qut[i] += qty;
-			return true;
-		}
-	}
-
-	if (inventory_count >= MAX_ITEMS)
-		return false;
-
-	inventory_name[inventory_count] = name;
-	inventory_price[inventory_count] = price;
-	inventory_qut[inventory_count] = qty;
-	inventory_count++;
-	return true;
-}
-
 void takeOrder(int category, int pick)
 {
 	int qty;
@@ -475,81 +252,6 @@ void printInvoice()
 	cout << "TOTAL: Rs " << total << endl;
 }
 
-// Sets the date.
-void load_date()
-{
-	ifstream inFile("date.txt");
-
-	if (inFile >> current_day >> current_month >> current_year)
-	{
-		inFile.close();
-
-		tm t = {};
-		t.tm_mday = current_day + 1;
-		t.tm_mon = current_month - 1;
-		t.tm_year = current_year - 1900;
-		t.tm_hour = 12;
-		mktime(&t);
-
-		current_day = t.tm_mday;
-		current_month = t.tm_mon + 1;
-		current_year = t.tm_year + 1900;
-	}
-	else
-	{
-		time_t now = time(0);
-		tm t;
-		localtime_s(&t, &now);
-
-		current_day = t.tm_mday;
-		current_month = t.tm_mon + 1;
-		current_year = t.tm_year + 1900;
-	}
-
-	saveDate();
-}
-
-void saveDate()
-{
-	ofstream outFile("date.txt");
-	outFile << current_day << " " << current_month << " " << current_year;
-	outFile.close();
-}
-
-// returns the date.
-string find_currunt_date()
-{
-	string d = to_string(current_day);
-	string m = to_string(current_month);
-	if (current_day < 10)
-		d = "0" + d;
-	if (current_month < 10)
-		m = "0" + m;
-	return d + "-" + m + "-" + to_string(current_year);
-}
-
-// adds the current invoice to the end of sales.txt
-void send_invoice_to_file()
-{
-	if (inventory_count == 0)
-		return;
-
-	ofstream outFile("sales.txt", ios::app); // app = append, keeps old data
-	if (!outFile)
-	{
-		cout << "Could not open sales file." << endl;
-		return;
-	}
-
-	outFile << "Date: " << find_currunt_date() << endl;
-	for (int i = 0; i < inventory_count; i++)
-		outFile << inventory_name[i] << " x" << inventory_qut[i] << " = Rs " << inventory_price[i] * inventory_qut[i] << endl;
-	outFile << "TOTAL: Rs " << invoice_total_is() << endl;
-	outFile << "-----------------------" << endl;
-
-	outFile.close();
-}
-
 // prints everything saved in sales.txt
 void viewSalesHistory()
 {
@@ -570,7 +272,11 @@ void viewSalesHistory()
 void SalesSection()
 {
 	const bool USE_GUI = true;
-	load_date();
+	// load_date() is already called once in main(); calling it again moved the date one more day
+
+	// read the latest products (new products / availability changes from the Product screen)
+	loadInventory();
+
 	if (USE_GUI)
 	{
 		runGUI();

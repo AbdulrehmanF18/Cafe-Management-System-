@@ -66,7 +66,7 @@ int openMainControlBox()
             }
         }
 
-        window.clear(Color(245, 247, 250));
+        window.clear(Color(211, 211, 211)); 
 
         for (int i = 0; i < 3; i++)
         {
