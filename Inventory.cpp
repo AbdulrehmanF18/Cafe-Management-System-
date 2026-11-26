@@ -6,13 +6,13 @@ using namespace std;
 
 const int MAX_PRODUCTS = 100;
 
-int productIDs[MAX_PRODUCTS];
+int product_ids[MAX_PRODUCTS];
 string productNames[MAX_PRODUCTS];
 int productPrices[MAX_PRODUCTS];
 int productCategories[MAX_PRODUCTS];
 bool productAvailable[MAX_PRODUCTS];
 
-int productCount = 0;
+int product_counts = 0;
 
 string getCategoryName(int category)
 {
@@ -41,16 +41,16 @@ void displayCategories()
 
 bool addProduct(int id, string name, int price, int category)
 {
-    if (productCount >= MAX_PRODUCTS)
+    if (product_counts >= MAX_PRODUCTS)
         return false;
 
-    productIDs[productCount] = id;
-    productNames[productCount] = name;
-    productPrices[productCount] = price;
-    productCategories[productCount] = category;
-    productAvailable[productCount] = true;
+    product_ids[product_counts] = id;
+    productNames[product_counts] = name;
+    productPrices[product_counts] = price;
+    productCategories[product_counts] = category;
+    productAvailable[product_counts] = true;
 
-    productCount++;
+    product_counts++;
 
     return true;
 }
@@ -59,12 +59,12 @@ int generateProductID(int category)
 {
     int largestID = category * 100;
 
-    for (int i = 0; i < productCount; i++)
+    for (int i = 0; i < product_counts; i++)
     {
         if (productCategories[i] == category &&
-            productIDs[i] > largestID)
+            product_ids[i] > largestID)
         {
-            largestID = productIDs[i];
+            largestID = product_ids[i];
         }
     }
 
@@ -81,9 +81,9 @@ void saveInventory()
         return;
     }
 
-    for (int i = 0; i < productCount; i++)
+    for (int i = 0; i < product_counts; i++)
     {
-        file << productIDs[i] << " "
+        file << product_ids[i] << " "
              << productCategories[i] << " "
              << productPrices[i] << " "
              << productAvailable[i] << " "
@@ -96,7 +96,7 @@ void saveInventory()
 void loadInventory()
 {
     ifstream file("inventory.txt");
-    productCount = 0;
+    product_counts = 0;
     if (file)
     {
         int id, category, price;
@@ -109,22 +109,22 @@ void loadInventory()
 
             getline(file, name);
 
-            if (productCount < MAX_PRODUCTS)
+            if (product_counts < MAX_PRODUCTS)
             {
-                productIDs[productCount] = id;
-                productCategories[productCount] = category;
-                productPrices[productCount] = price;
-                productAvailable[productCount] = available;
-                productNames[productCount] = name;
+                product_ids[product_counts] = id;
+                productCategories[product_counts] = category;
+                productPrices[product_counts] = price;
+                productAvailable[product_counts] = available;
+                productNames[product_counts] = name;
 
-                productCount++;
+                product_counts++;
             }
         }
 
         file.close();
     }
 
-    if (productCount == 0)
+    if (product_counts == 0)
     {
         addProduct(101, "Classic Cheeseburger", 500, 1);
         addProduct(102, "Spicy Zinger Burger", 600, 1);
@@ -161,10 +161,10 @@ void displayAllProducts()
     cout << endl
          << "========== PRODUCT INVENTORY ==========" << endl;
 
-    for (int i = 0; i < productCount; i++)
+    for (int i = 0; i < product_counts; i++)
     {
         cout << endl
-             << "ID: " << productIDs[i];
+             << "ID: " << product_ids[i];
         cout << endl
              << "Name: " << productNames[i];
         cout << endl
@@ -183,14 +183,14 @@ void displayAllProducts()
     }
 }
 
-void displayProductIDs()
+void displayproduct_ids()
 {
     cout << endl
          << "========== PRODUCT IDs ==========" << endl;
 
-    for (int i = 0; i < productCount; i++)
+    for (int i = 0; i < product_counts; i++)
     {
-        cout << productIDs[i] << " - "
+        cout << product_ids[i] << " - "
              << productNames[i] << " ("
              << getCategoryName(productCategories[i]) << ")";
 
@@ -203,7 +203,7 @@ void displayProductIDs()
 
 void addNewProduct()
 {
-    if (productCount >= MAX_PRODUCTS)
+    if (product_counts >= MAX_PRODUCTS)
     {
         cout << "Inventory is full!" << endl;
         return;
@@ -267,13 +267,13 @@ void addNewProduct()
 
 void changeProductAvailability(bool status)
 {
-    if (productCount == 0)
+    if (product_counts == 0)
     {
         cout << "No products in inventory!" << endl;
         return;
     }
 
-    displayProductIDs();
+    displayproduct_ids();
 
     int id;
     bool found = false;
@@ -282,9 +282,9 @@ void changeProductAvailability(bool status)
          << "Enter product ID: ";
     cin >> id;
 
-    for (int i = 0; i < productCount; i++)
+    for (int i = 0; i < product_counts; i++)
     {
-        if (productIDs[i] == id)
+        if (product_ids[i] == id)
         {
             productAvailable[i] = status;
             found = true;

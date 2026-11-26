@@ -245,16 +245,16 @@ int openInventoryPage()
 
                     if (deleteRect.contains(mousePos))
                     {
-                        for (int i = menuIndex; i < productCount - 1; i++)
+                        for (int i = menuIndex; i < product_counts - 1; i++)
                         {
-                            productIDs[i] = productIDs[i + 1];
+                            product_ids[i] = product_ids[i + 1];
                             productNames[i] = productNames[i + 1];
                             productPrices[i] = productPrices[i + 1];
                             productCategories[i] = productCategories[i + 1];
                             productAvailable[i] = productAvailable[i + 1];
                         }
 
-                        productCount--;
+                        product_counts--;
 
                         saveInventory();
 
@@ -271,7 +271,7 @@ int openInventoryPage()
 
                 bool clickedRow = false;
 
-                for (int i = 0; i < productCount && i < 13; i++)
+                for (int i = 0; i < product_counts && i < 13; i++)
                 {
                     float y = 170.f + i * 40.f;
 
@@ -377,7 +377,7 @@ int openInventoryPage()
 
         // PRODUCT ROWS
 
-        for (int i = 0; i < productCount && i < 13; i++)
+        for (int i = 0; i < product_counts && i < 13; i++)
         {
             float y = 170.f + i * 40.f;
 
@@ -392,7 +392,7 @@ int openInventoryPage()
 
             window.draw(row);
 
-            Text idText(font, to_string(productIDs[i]), 15);
+            Text idText(font, to_string(product_ids[i]), 15);
             idText.setFillColor(Color::Black);
             idText.setPosition({45.f, y + 8.f});
             window.draw(idText);
@@ -433,7 +433,7 @@ int openInventoryPage()
             }
         }
 
-        if (productCount == 0)
+        if (product_counts == 0)
         {
             Text emptyText(font, "No products found", 20);
             emptyText.setFillColor(Color(127, 140, 141));

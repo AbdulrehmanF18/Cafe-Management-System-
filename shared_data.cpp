@@ -5,50 +5,41 @@
 
 using namespace std;
 
-// ============================================================
-// GLOBAL VARIABLES (used by reports.cpp and the GUI)
-// ============================================================
-int currentDay = 1;
-int currentMonth = 1;
-int currentYear = 2026;
+int current_day = 1;
+int current_month = 1;
+int current_year = 2026;
 
-// ============================================================
-// INVOICE DATA (used by your sales GUI)
-// ============================================================
 const int MAX_ITEMS = 50;
-string invNames[MAX_ITEMS];
-int invPrices[MAX_ITEMS];
-int invQty[MAX_ITEMS];
-int invCount = 0;
+string inventory_name[MAX_ITEMS];
+int inventory_price[MAX_ITEMS];
+int inventory_qut[MAX_ITEMS];
+int inventory_count = 0;
 
-// ============================================================
-// DATE FUNCTIONS
-// ============================================================
 void saveDate()
 {
     ofstream outFile("date.txt");
-    outFile << currentDay << " " << currentMonth << " " << currentYear;
+    outFile << current_day << " " << current_month << " " << current_year;
     outFile.close();
 }
 
-void loadDate()
+void load_date()
 {
     ifstream inFile("date.txt");
 
-    if (inFile >> currentDay >> currentMonth >> currentYear)
+    if (inFile >> current_day >> current_month >> current_year)
     {
         inFile.close();
 
         tm t = {};
-        t.tm_mday = currentDay + 1;
-        t.tm_mon = currentMonth - 1;
-        t.tm_year = currentYear - 1900;
+        t.tm_mday = current_day + 1;
+        t.tm_mon = current_month - 1;
+        t.tm_year = current_year - 1900;
         t.tm_hour = 12;
         mktime(&t);
 
-        currentDay = t.tm_mday;
-        currentMonth = t.tm_mon + 1;
-        currentYear = t.tm_year + 1900;
+        current_day = t.tm_mday;
+        current_month = t.tm_mon + 1;
+        current_year = t.tm_year + 1900;
     }
     else
     {
@@ -56,78 +47,77 @@ void loadDate()
         tm t;
         localtime_s(&t, &now);
 
-        currentDay = t.tm_mday;
-        currentMonth = t.tm_mon + 1;
-        currentYear = t.tm_year + 1900;
+        current_day = t.tm_mday;
+        current_month = t.tm_mon + 1;
+        current_year = t.tm_year + 1900;
     }
 
     saveDate();
 }
 
-string getCurrentDate()
+string find_currunt_date()
 {
-    string d = to_string(currentDay);
-    string m = to_string(currentMonth);
-    if (currentDay < 10)
+    string d = to_string(current_day);
+    string m = to_string(current_month);
+    if (current_day < 10)
         d = "0" + d;
-    if (currentMonth < 10)
+    if (current_month < 10)
         m = "0" + m;
-    return d + "-" + m + "-" + to_string(currentYear);
+    return d + "-" + m + "-" + to_string(current_year);
 }
 
-// ============================================================
-// INVOICE FUNCTIONS (Used by your GUI to save sales)
-// ============================================================
-bool addToInvoice(string name, int price, int qty)
+bool add_this_to_invoice(string name, int price, int qty)
 {
-    for (int i = 0; i < invCount; i++)
+    for (int i = 0; i < inventory_count; i++)
     {
-        if (invNames[i] == name)
+        if (inventory_name[i] == name)
         {
-            invQty[i] += qty;
+            inventory_qut[i] += qty;
             return true;
         }
     }
 
-    if (invCount >= MAX_ITEMS)
+    if (inventory_count >= MAX_ITEMS)
+    {
         return false;
+    }
 
-    invNames[invCount] = name;
-    invPrices[invCount] = price;
-    invQty[invCount] = qty;
-    invCount++;
+    inventory_name[inventory_count] = name;
+    inventory_price[inventory_count] = price;
+    inventory_qut[inventory_count] = qty;
+    inventory_count++;
     return true;
 }
 
-int getInvoiceTotal()
+int invoice_total_is()
 {
     int total = 0;
-    for (int i = 0; i < invCount; i++)
-        total += invPrices[i] * invQty[i];
+    for (int i = 0; i < inventory_count; i++)
+        total += inventory_price[i] * inventory_qut[i];
     return total;
 }
 
-void clearInvoice()
+void clear_invoice()
 {
-    invCount = 0;
+    inventory_count = 0;
 }
 
-void saveInvoiceToFile()
+void send_invoice_to_file()
 {
-    if (invCount == 0)
+    if (inventory_count == 0)
         return;
 
-    ofstream outFile("sales.txt", ios::app); // app = append, keeps old data
+    ofstream outFile("sales.txt", ios::app); // app = append while keeping old data
     if (!outFile)
     {
         cout << "Could not open sales file." << endl;
         return;
     }
 
-    outFile << "Date: " << getCurrentDate() << endl;
-    for (int i = 0; i < invCount; i++)
-        outFile << invNames[i] << " x" << invQty[i] << " = Rs " << invPrices[i] * invQty[i] << endl;
-    outFile << "TOTAL: Rs " << getInvoiceTotal() << endl;
+    outFile << "Date: " << find_currunt_date() << endl;
+    for (int i = 0; i < inventory_count; i++)
+        outFile << inventory_name[i] << " x" << inventory_qut[i] << " = Rs " << inventory_price[i] * inventory_qut[i] << endl;
+    outFile << "TOTAL: Rs " << invoice_total_is() << endl;
     outFile << "-----------------------" << endl;
 
     outFile.close();
